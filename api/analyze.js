@@ -28,9 +28,9 @@ export default async function handler(req, res) {
 
   // プランに応じたモデルの選択
   const modelMap = {
-    free: 'gemini-2.0-flash',           // Flash（軽量・高速）
-    premium: 'gemini-2.5-pro-preview-03-25', // Pro（高精度）
-    pro: 'gemini-2.5-pro-preview-03-25'      // Pro（最高精度）
+    free: 'gemini-2.5-flash',                // Flash（軽量・高速）
+    premium: 'gemini-2.5-pro',               // Pro（高精度）
+    pro: 'gemini-2.5-pro'                    // Pro（最高精度）
   };
 
   const model = modelMap[plan] || modelMap.free;
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
 2. 本音の推定（honne）: 言葉の裏にある本当の感情や意図。日本語特有の婉曲表現、空気、建前を考慮
 3. 感情スコア（emotions）: 以下5つを0-100で評価
    - 怒り: 怒りや苛立ち
-   - 不満: 不渀や不快感
+   - 不満: 不満や不快感
    - 期待: 期待や希望
    - 好意: 好意や親しみ
    - 不安: 不安や心配
