@@ -234,17 +234,17 @@ function switchPlan(plan) {
     badge.textContent = 'Free (3/day)';
     usageLeft = 3;
     document.getElementById('usageCount').textContent = '3';
-    usageInfo.innerHTML = '本日の残り回数: <strong>3</strong> / 3回（Free プラン - Haiku 4.5）';
+    usageInfo.innerHTML = '本日の残り回数: <strong>3</strong> / 3回（Free プラン - Gemini Flash）';
   }
   if (plan === 'premium') {
     badge.textContent = 'Premium';
     usageLeft = 999;
-    usageInfo.innerHTML = '無制限（Premium プラン - Sonnet 4.6）';
+    usageInfo.innerHTML = '無制限（Premium プラン - Gemini Pro）';
   }
   if (plan === 'pro') {
     badge.textContent = 'Pro';
     usageLeft = 999;
-    usageInfo.innerHTML = '無制限 + 深層分析（Pro プラン - Opus 4.6）';
+    usageInfo.innerHTML = '無制限 + 深層分析（Pro プラン - Gemini Pro）';
   }
 }
 
@@ -277,7 +277,7 @@ const demoAnalysis = {
 };
 
 function analyzeTextLocal(text) {
-  const hasPositive = text.includes('ありがとう') || text.includes('嬉しい') || text.includes('楽しい') || text.includes('最高');
+  const hasPositive = text.includes('ありがとう') || text.includes('嬉しい') || text.includes('楔しい') || text.includes('最高');
   if (hasPositive) return demoAnalysis['default_positive'];
   return demoAnalysis['default_negative'];
 }
