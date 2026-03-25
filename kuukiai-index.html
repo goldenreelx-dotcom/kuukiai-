@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KuukiAI - AIが会話の「空気」を読み解きます</title>
+<meta name="description" content="LINEやメールの本音を3秒で可視化。AIが会話の空気を読み解く無料ツール。">
+<meta property="og:title" content="KuukiAI - AIが会話の空気を読み解きます">
+<meta property="og:description" content="LINEやメールの本音を3秒で可視化。無料で使えます。">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="KuukiAI - AIが会話の空気を読み解きます">
+<meta name="twitter:description" content="LINEやメールの本音を3秒で可視化。無料で使えます。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23667EEA'/%3E%3Cstop offset='100%25' stop-color='%23764BA2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='12' fill='url(%23g)'/%3E%3Cg stroke='white' stroke-width='3' stroke-linecap='round' fill='none' transform='translate(14,18)'%3E%3Cpath d='M 4,8 Q 12,2 20,8 Q 28,14 36,8'/%3E%3Cpath d='M 4,18 Q 12,12 20,18 Q 28,24 36,18'/%3E%3Cpath d='M 4,28 Q 12,22 20,28 Q 28,34 36,28'/%3E%3C/g%3E%3C/svg%3E">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif; background: #f7fafc; color: #2d3748; min-height: 100vh; }
+
+.gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+
+header { padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; }
+.logo { display: flex; align-items: center; gap: 10px; color: white; font-size: 24px; font-weight: 800; letter-spacing: 1px; }
+.logo-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.plan-badge { background: rgba(255,255,255,0.2); color: white; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+
+.hero { text-align: center; padding: 40px 24px 30px; color: white; }
+.hero h1 { font-size: 28px; margin-bottom: 12px; line-height: 1.4; }
+.hero p { font-size: 16px; opacity: 0.9; max-width: 500px; margin: 0 auto; }
+
+.main-card { max-width: 640px; margin: 0 auto 30px; padding: 0 16px; }
+.card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 24px; }
+
+.input-section { margin-bottom: 20px; }
+.input-section label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 15px; color: #4a5568; }
+.context-select { width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; margin-bottom: 12px; background: white; color: #2d3748; }
+textarea { width: 100%; height: 120px; padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; resize: vertical; font-family: inherit; transition: border-color 0.2s; line-height: 1.6; }
+textarea:focus { outline: none; border-color: #667eea; }
+textarea::placeholder { color: #a0aec0; }
+.char-count { text-align: right; font-size: 12px; color: #a0aec0; margin-top: 4px; }
+
+.analyze-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s, box-shadow 0.2s; letter-spacing: 1px; }
+.analyze-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+.analyze-btn:active { transform: translateY(0); }
+.analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.usage-info { text-align: center; margin-top: 12px; font-size: 13px; color: #718096; }
+.usage-info strong { color: #667eea; }
+
+/* Results */
+.results { display: none; margin-top: 24px; }
+.results.show { display: block; }
+
+.result-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.result-header h3 { font-size: 16px; color: #2d3748; }
+.keigo-badge { background: #ebf4ff; color: #3182ce; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+
+.analysis-box { background: #f7fafc; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+.analysis-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
+.analysis-row:last-child { border-bottom: none; }
+.analysis-label { font-size: 14px; color: #4a5568; display: flex; align-items: center; gap: 6px; }
+.analysis-value { font-size: 14px; font-weight: 600; }
+
+.surface-box, .honne-box { border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.surface-box { background: #ebf8ff; border-left: 4px solid #3182ce; }
+.honne-box { background: #fff5f5; border-left: 4px solid #e53e3e; }
+.box-label { font-size: 12px; font-weight: 700; color: #718096; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+.box-text { font-size: 15px; line-height: 1.6; }
+
+.emotion-section { margin: 16px 0; }
+.emotion-section h4 { font-size: 14px; color: #4a5568; margin-bottom: 12px; }
+.emotion-bar { display: flex; align-items: center; margin-bottom: 8px; gap: 8px; }
+.emotion-name { width: 70px; font-size: 13px; color: #4a5568; text-align: right; }
+.emotion-track { flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+.emotion-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+.emotion-value { width: 35px; font-size: 12px; color: #718096; font-weight: 600; }
+
+.reply-section { margin-top: 20px; }
+.reply-section h4 { font-size: 14px; color: #4a5568; margin-bottom: 12px; }
+.reply-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
+.reply-card:hover { border-color: #667eea; box-shadow: 0 2px 8px rgba(102,126,234,0.15); }
+.reply-tone { font-size: 11px; font-weight: 700; color: #667eea; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.reply-text { font-size: 14px; line-height: 1.5; color: #2d3748; }
+.copied-msg { font-size: 12px; color: #38a169; font-weight: 600; display: none; margin-top: 4px; }
+
+.share-section { text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+.share-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: #1da1f2; color: white; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; }
+.share-btn:hover { background: #1a91da; }
+
+/* Loading animation */
+.loading { display: none; text-align: center; padding: 40px 20px; }
+.loading.show { display: block; }
+.loading-text { font-size: 15px; color: #667eea; font-weight: 600; margin-top: 16px; }
+.spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Plan switcher */
+.plan-switcher { display: flex; justify-content: center; gap: 8px; margin: 20px auto; max-width: 640px; padding: 0 16px; }
+.plan-tab { padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); background: transparent; transition: all 0.2s; }
+.plan-tab.active { background: rgba(255,255,255,0.2); color: white; border-color: white; }
+
+footer { text-align: center; padding: 30px; color: #a0aec0; font-size: 13px; }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .hero h1 { font-size: 22px; }
+  .card { padding: 18px; }
+  .plan-switcher { gap: 4px; }
+  .plan-tab { padding: 6px 12px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="gradient-bg">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 40 40" fill="none">
+          <g stroke="white" stroke-width="3" stroke-linecap="round">
+            <path d="M 5,10 Q 13,4 21,10 Q 29,16 37,10"/>
+            <path d="M 5,20 Q 13,14 21,20 Q 29,26 37,20"/>
+            <path d="M 5,30 Q 13,24 21,30 Q 29,36 37,30"/>
+          </g>
+        </svg>
+      </div>
+      KuukiAI
+    </div>
+    <div class="plan-badge" id="planBadge">Free (3/day)</div>
+  </header>
+
+  <div class="hero">
+    <h1>AIが会話の「空気」を<br>読み解きます</h1>
+    <p>LINEやメールのテキストを貼り付けるだけ。<br>隠れた感情と本音を3秒で可視化。</p>
+  </div>
+
+  <div class="plan-switcher">
+    <button class="plan-tab active" onclick="switchPlan('free')">Free</button>
+    <button class="plan-tab" onclick="switchPlan('premium')">Premium ¥980</button>
+    <button class="plan-tab" onclick="switchPlan('pro')">Pro ¥2,980</button>
+  </div>
+</div>
+
+<div class="main-card" style="margin-top: -10px;">
+  <div class="card">
+    <div class="input-section">
+      <label>会話の場面</label>
+      <select class="context-select" id="contextSelect">
+        <option value="line">LINE・チャット</option>
+        <option value="email">ビジネスメール</option>
+        <option value="slack">Slack・Teams</option>
+        <option value="sns">SNS・コメント</option>
+      </select>
+
+      <label>分析したいテキスト</label>
+      <textarea id="inputText" placeholder="例：「別にいいよ」「大丈夫です、気にしないでください」&#10;&#10;LINEやメールの文章をここに貼り付けてください..."></textarea>
+      <div class="char-count"><span id="charCount">0</span> / 500文字</div>
+    </div>
+
+    <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">
+      空気を読む
+    </button>
+    <div class="usage-info">
+      本日の残り回数: <strong id="usageCount">3</strong> / 3回（Free プラン）
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <div class="loading-text" id="loadingText">テキストを解析中...</div>
+    </div>
+
+    <div class="results" id="results">
+      <div class="result-header">
+        <h3>分析結果</h3>
+        <span class="keigo-badge" id="keigoBadge">敬語レベル: --</span>
+      </div>
+
+      <div class="surface-box">
+        <div class="box-label">表面的な意味</div>
+        <div class="box-text" id="surfaceText">--</div>
+      </div>
+
+      <div class="honne-box">
+        <div class="box-label">本音（ホンネ）</div>
+        <div class="box-text" id="honneText">--</div>
+      </div>
+
+      <div class="emotion-section">
+        <h4>感情スコア</h4>
+        <div id="emotionBars"></div>
+      </div>
+
+      <div class="reply-section">
+        <h4>おすすめ返信</h4>
+        <div id="replyCards"></div>
+      </div>
+
+      <div class="share-section">
+        <a class="share-btn" id="shareBtn" href="#" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          結果をシェア
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  &copy; 2026 KuukiAI - AIが会話の空気を読み解きます
+</footer>
+
+<script>
+let currentPlan = 'free';
+let usageLeft = 3;
+
+const textarea = document.getElementById('inputText');
+const charCount = document.getElementById('charCount');
+
+textarea.addEventListener('input', () => {
+  charCount.textContent = textarea.value.length;
+});
+
+function switchPlan(plan) {
+  currentPlan = plan;
+  document.querySelectorAll('.plan-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  const badge = document.getElementById('planBadge');
+  const usage = document.getElementById('usageCount');
+  const usageInfo = document.querySelector('.usage-info');
+  if (plan === 'free') { badge.textContent = 'Free (3/day)'; usageLeft = 3; usage.textContent = '3'; usageInfo.innerHTML = '本日の残り回数: <strong>3</strong> / 3回（Free プラン）'; }
+  if (plan === 'premium') { badge.textContent = 'Premium'; usageLeft = 999; usageInfo.innerHTML = '無制限（Premium プラン）'; }
+  if (plan === 'pro') { badge.textContent = 'Pro'; usageLeft = 999; usageInfo.innerHTML = '無制限 + 深層分析（Pro プラン）'; }
+}
+
+// Demo analysis database
+const demoAnalysis = {
+  'default_negative': {
+    surface: '表面上は問題ないと伝えている',
+    honne: '実際には不満や期待外れの感情を抱えている可能性が高い。直接的に言わないことで、相手に察してほしいというサインを送っている。',
+    emotions: { '怒り': 25, '不満': 65, '期待': 40, '好意': 15, '不安': 50 },
+    keigo: 2,
+    replies: [
+      { tone: '共感型', text: 'そう感じてるんだね。もう少し詳しく聞かせてもらえると嬉しいです。' },
+      { tone: '確認型', text: '本当に大丈夫？何か気になることがあれば遠慮なく言ってね。' },
+      { tone: '提案型', text: '一度ゆっくり話す時間を作らない？直接会って話したいな。' }
+    ]
+  },
+  'default_positive': {
+    surface: '好意的で前向きな気持ちを伝えている',
+    honne: '相手に対してポジティブな感情を持っており、関係を良好に保ちたいという意思が見える。言葉に偽りはなく、素直な気持ちの表現である可能性が高い。',
+    emotions: { '怒り': 5, '不満': 5, '期待': 70, '好意': 85, '不安': 10 },
+    keigo: 2,
+    replies: [
+      { tone: '感謝型', text: 'ありがとう！そう言ってもらえると本当に嬉しいです。' },
+      { tone: '共感型', text: '私も同じ気持ちです！これからもよろしくお願いします。' },
+      { tone: 'カジュアル型', text: 'えー嬉しい！ありがとね！' }
+    ]
+  },
+  'default_formal': {
+    surface: 'ビジネス上の丁寧な対応をしている',
+    honne: '形式的な丁寧さの裏に、本心を隠している可能性がある。敬語のレベルが高いほど、心理的な距離を置きたい気持ちが強い場合がある。',
+    emotions: { '怒り': 15, '不満': 35, '期待': 30, '好意': 25, '不安': 45 },
+    keigo: 4,
+    replies: [
+      { tone: 'ビジネス型', text: 'ご連絡ありがとうございます。承知いたしました。改めてご相談させていただければ幸いです。' },
+      { tone: '柔らかめ', text: 'ありがとうございます。何かございましたらいつでもお気軽にお声がけください。' },
+      { tone: '率直型', text: 'ありがとうございます。もしよろしければ、率直なご意見をいただけると助かります。' }
+    ]
+  },
+  'default_short': {
+    surface: '短い返事で了承を示している',
+    honne: '短い返答は、関心の低さや面倒に感じている可能性を示唆する。「わかった」だけでは本当に理解・納得しているかは不明。感情を出したくない、または会話を早く終わらせたい心理がうかがえる。',
+    emotions: { '怒り': 30, '不満': 50, '期待': 15, '好意': 20, '不安': 25 },
+    keigo: 1,
+    replies: [
+      { tone: '確認型', text: '了解！ちなみに何か気になる点はある？' },
+      { tone: '配慮型', text: '忙しいところごめんね。また時間ある時に詳しく聞かせて。' },
+      { tone: '直球型', text: '大丈夫？何か思うところあったら言ってね。' }
+    ]
+  }
+};
+
+// Known phrases
+const knownPhrases = {
+  '別にいいよ': {
+    surface: '了承・許可を示している',
+    honne: '「別に」という言葉には投げやりなニュアンスが含まれる。本当は良くないが、これ以上議論する気力がない、または相手に期待するのを諦めた可能性が高い。',
+    emotions: { '怒り': 35, '不満': 70, '期待': 20, '好意': 10, '不安': 30 },
+    keigo: 1,
+    replies: [
+      { tone: '寄り添い型', text: '無理してない？本当のこと言ってくれていいんだよ。' },
+      { tone: '確認型', text: 'ごめんね、もしかして嫌だった？ちゃんと聞きたいな。' },
+      { tone: '行動型', text: '別の案も考えてみたんだけど、こっちはどう？' }
+    ]
+  },
+  '大丈夫': {
+    surface: '問題ないことを伝えている',
+    honne: '日本語の「大丈夫」は最も多義的な表現の一つ。「大丈夫」と言いながら大丈夫でないケースは非常に多い。声のトーンや文脈が重要だが、テキストでは相手に心配をかけたくない気持ちの表れであることが多い。',
+    emotions: { '怒り': 10, '不満': 40, '期待': 25, '好意': 30, '不安': 60 },
+    keigo: 1,
+    replies: [
+      { tone: '共感型', text: '本当に？無理しなくていいからね。いつでも話聞くよ。' },
+      { tone: '具体型', text: '何か手伝えることがあったら言ってね。一人で抱え込まないで。' },
+      { tone: '軽め型', text: 'そっか、何かあったらいつでも連絡してね！' }
+    ]
+  },
+  '了解': {
+    surface: '理解・承認を示している',
+    honne: '最小限の返答である「了解」は、積極的な同意ではなく消極的な受容の場合が多い。特に普段もっと言葉数が多い相手からの「了解」は、不満や疲れのサインかもしれない。',
+    emotions: { '怒り': 20, '不満': 45, '期待': 10, '好意': 15, '不安': 20 },
+    keigo: 1,
+    replies: [
+      { tone: '丁寧型', text: 'ありがとう！何か質問があればいつでも聞いてね。' },
+      { tone: '確認型', text: '大丈夫そう？もし気になることがあれば教えてほしいな。' },
+      { tone: '感謝型', text: 'いつもありがとう！助かってるよ。' }
+    ]
+  },
+  'お疲れ様': {
+    surface: '労いの挨拶をしている',
+    honne: '定型的な挨拶だが、タイミングや文脈によって意味が変わる。仕事終わりの「お疲れ様」は純粋な労い。しかし会話の切り上げとして使われる場合は、これ以上の会話を望んでいないサインの可能性がある。',
+    emotions: { '怒り': 5, '不満': 15, '期待': 20, '好意': 50, '不安': 10 },
+    keigo: 3,
+    replies: [
+      { tone: '元気型', text: 'お疲れ様！今日も一日頑張ったね。ゆっくり休んでね。' },
+      { tone: '気遣い型', text: 'お疲れ様です。最近忙しそうだけど体調は大丈夫？' },
+      { tone: '誘い型', text: 'お疲れ様！今度の週末、息抜きにどこか行かない？' }
+    ]
+  }
+};
+
+function analyzeText(text) {
+  const trimmed = text.trim();
+
+  // Check known phrases
+  for (const [phrase, result] of Object.entries(knownPhrases)) {
+    if (trimmed.includes(phrase)) return result;
+  }
+
+  // Smart fallback
+  const hasEllipsis = trimmed.includes('...') || trimmed.includes('…');
+  const hasExclamation = trimmed.includes('！') || trimmed.includes('!');
+  const isShort = trimmed.length < 10;
+  const hasSumimasen = trimmed.includes('すみません') || trimmed.includes('申し訳');
+  const hasChotto = trimmed.includes('ちょっと') || trimmed.includes('微妙');
+  const hasPositive = trimmed.includes('ありがとう') || trimmed.includes('嬉しい') || trimmed.includes('楽しい') || trimmed.includes('最高');
+  const hasFormal = trimmed.includes('ございます') || trimmed.includes('いただ') || trimmed.includes('存じ') || trimmed.includes('幸い');
+
+  if (hasPositive) return demoAnalysis['default_positive'];
+  if (hasFormal) return demoAnalysis['default_formal'];
+  if (hasSumimasen || hasChotto) return {
+    surface: '申し訳なさや遠慮を表現している',
+    honne: '「すみません」「ちょっと」は日本語における婉曲的な拒否や不満の前置き。本当に言いたいことは別にある可能性が高く、相手への配慮から直接的な表現を避けている。',
+    emotions: { '怒り': 20, '不満': 55, '期待': 30, '好意': 25, '不安': 60 },
+    keigo: 3,
+    replies: [
+      { tone: '受容型', text: '気にしないでください。率直に言ってもらえると助かります。' },
+      { tone: '確認型', text: '何か気になることがありましたか？遠慮なくおっしゃってください。' },
+      { tone: '提案型', text: '別の方法も検討してみましょうか？' }
+    ]
+  };
+  if (isShort) return demoAnalysis['default_short'];
+  if (hasEllipsis) return demoAnalysis['default_negative'];
+
+  return demoAnalysis['default_negative'];
+}
+
+function analyze() {
+  const text = document.getElementById('inputText').value.trim();
+  if (!text) { alert('テキストを入力してください'); return; }
+  if (currentPlan === 'free' && usageLeft <= 0) { alert('本日の無料回数を使い切りました。\nPremiumプランにアップグレードすると無制限で使えます。'); return; }
+
+  // Show loading
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('analyzeBtn').disabled = true;
+
+  const phases = ['テキストを解析中...', '感情パターンを検出中...', '本音を推定中...'];
+  let phase = 0;
+  const phaseInterval = setInterval(() => {
+    phase++;
+    if (phase < phases.length) {
+      document.getElementById('loadingText').textContent = phases[phase];
+    }
+  }, 800);
+
+  setTimeout(() => {
+    clearInterval(phaseInterval);
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('analyzeBtn').disabled = false;
+
+    if (currentPlan === 'free') {
+      usageLeft--;
+      document.getElementById('usageCount').textContent = usageLeft;
+    }
+
+    const result = analyzeText(text);
+    displayResult(result, text);
+  }, 2500);
+}
+
+function displayResult(result, originalText) {
+  document.getElementById('surfaceText').textContent = result.surface;
+  document.getElementById('honneText').textContent = result.honne;
+
+  const keigoLabels = ['', 'タメ口', 'カジュアル', '標準敬語', '丁寧', '最上級敬語'];
+  document.getElementById('keigoBadge').textContent = '敬語レベル: ' + keigoLabels[result.keigo];
+
+  // Emotion bars
+  const emotionColors = { '怒り': '#e53e3e', '不満': '#ed8936', '期待': '#38b2ac', '好意': '#38a169', '不安': '#805ad5' };
+  const barsHtml = Object.entries(result.emotions).map(([name, value]) => `
+    <div class="emotion-bar">
+      <span class="emotion-name">${name}</span>
+      <div class="emotion-track">
+        <div class="emotion-fill" style="width: ${value}%; background: ${emotionColors[name] || '#667eea'}"></div>
+      </div>
+      <span class="emotion-value">${value}%</span>
+    </div>
+  `).join('');
+  document.getElementById('emotionBars').innerHTML = barsHtml;
+
+  // Reply cards
+  const repliesHtml = result.replies.map((r, i) => `
+    <div class="reply-card" onclick="copyReply(this, '${r.text.replace(/'/g, "\\'")}')">
+      <div class="reply-tone">${r.tone}</div>
+      <div class="reply-text">${r.text}</div>
+      <div class="copied-msg" id="copied${i}">コピーしました！</div>
+    </div>
+  `).join('');
+  document.getElementById('replyCards').innerHTML = repliesHtml;
+
+  // Share button
+  const shareText = encodeURIComponent(`KuukiAIで「${originalText.substring(0, 20)}...」を分析してみた！\n本音が丸見えで怖い...\n\n#KuukiAI #空気読みAI`);
+  document.getElementById('shareBtn').href = `https://twitter.com/intent/tweet?text=${shareText}`;
+
+  document.getElementById('results').classList.add('show');
+}
+
+function copyReply(card, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const msg = card.querySelector('.copied-msg');
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>
