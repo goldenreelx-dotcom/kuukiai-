@@ -524,17 +524,17 @@ function switchPlan(plan, btn) {
     badge.textContent = 'Free (3/day)';
     usageLeft = 3;
     document.getElementById('usageCount').textContent = '3';
-    usageInfo.innerHTML = '本日の残り回数: <strong>3</strong> / 3回（Free プラン）';
+    usageInfo.innerHTML = '本日の残り回数: <strong id="usageCount">3</strong> / 3回（Free プラン）';
   }
   if (plan === 'premium') {
     badge.textContent = 'Premium';
     usageLeft = 30;
-    usageInfo.innerHTML = '本日の残り回数: <strong>30</strong> / 30回（Premium プラン - Gemini Pro）';
+    usageInfo.innerHTML = '本日の残り回数: <strong id="usageCount">30</strong> / 30回（Premium プラン - Gemini Pro）';
   }
   if (plan === 'pro') {
     badge.textContent = 'Pro';
     usageLeft = 100;
-    usageInfo.innerHTML = '本日の残り回数: <strong>100</strong> / 100回（Pro プラン - 深層分析）';
+    usageInfo.innerHTML = '本日の残り回数: <strong id="usageCount">100</strong> / 100回（Pro プラン - 深層分析）';
   }
 }
 
