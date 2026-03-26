@@ -8,127 +8,408 @@
 <meta property="og:title" content="KuukiAI - AIが会話の空気を読み解きます">
 <meta property="og:description" content="LINEやメールの本音を3秒で可視化。無料で使えます。">
 <meta property="og:type" content="website">
-  <meta property="og:image" content="https://kuukiai.vercel.app/ogp.png">
-  <meta property="og:url" content="https://kuukiai.vercel.app">
-  <meta name="twitter:image" content="https://kuukiai.vercel.app/ogp.png">
+<meta property="og:image" content="https://kuukiai.vercel.app/ogp.png">
+<meta property="og:url" content="https://kuukiai.vercel.app">
+<meta name="twitter:image" content="https://kuukiai.vercel.app/ogp.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="KuukiAI - AIが会話の空気を読み解きます">
 <meta name="twitter:description" content="LINEやメールの本音を3秒で可視化。無料で使えます。">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23667EEA'/%3E%3Cstop offset='100%25' stop-color='%23764BA2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='12' fill='url(%23g)'/%3E%3Cg stroke='white' stroke-width='3' stroke-linecap='round' fill='none' transform='translate(14,18)'%3E%3Cpath d='M 4,8 Q 12,2 20,8 Q 28,14 36,8'/%3E%3Cpath d='M 4,18 Q 12,12 20,18 Q 28,24 36,18'/%3E%3Cpath d='M 4,28 Q 12,22 20,28 Q 28,34 36,28'/%3E%3C/g%3E%3C/svg%3E">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif; background: #f7fafc; color: #2d3748; min-height: 100vh; }
 
-.gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding-bottom: 30px; }
+/* Gradient background with animated particles */
+.gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding-bottom: 30px;
+  position: relative;
+  overflow: hidden;
+}
+.gradient-bg::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.08) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 40%),
+              radial-gradient(circle at 50% 80%, rgba(255,255,255,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
 
-header { padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; }
+/* Floating particles */
+.particles {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  width: 6px; height: 6px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+.particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; animation-duration: 7s; }
+.particle:nth-child(2) { left: 30%; top: 60%; animation-delay: 1s; animation-duration: 5s; width: 4px; height: 4px; }
+.particle:nth-child(3) { left: 60%; top: 30%; animation-delay: 2s; animation-duration: 8s; width: 8px; height: 8px; }
+.particle:nth-child(4) { left: 80%; top: 70%; animation-delay: 0.5s; animation-duration: 6s; }
+.particle:nth-child(5) { left: 50%; top: 10%; animation-delay: 3s; animation-duration: 9s; width: 5px; height: 5px; }
+.particle:nth-child(6) { left: 90%; top: 40%; animation-delay: 1.5s; animation-duration: 7s; width: 3px; height: 3px; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  25% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
+  50% { transform: translateY(-10px) translateX(-5px); opacity: 0.4; }
+  75% { transform: translateY(-25px) translateX(8px); opacity: 0.5; }
+}
+
+header {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  animation: fadeInDown 0.6s ease-out;
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .logo { display: flex; align-items: center; gap: 10px; color: white; font-size: 24px; font-weight: 800; letter-spacing: 1px; }
-.logo-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-.plan-badge { background: rgba(255,255,255,0.2); color: white; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+.logo-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.plan-badge { background: rgba(255,255,255,0.2); color: white; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; backdrop-filter: blur(4px); }
 
-.hero { text-align: center; padding: 40px 24px 30px; color: white; }
+.hero {
+  text-align: center;
+  padding: 40px 24px 30px;
+  color: white;
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.8s ease-out;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .hero h1 { font-size: 28px; margin-bottom: 12px; line-height: 1.4; }
-.hero p { font-size: 16px; opacity: 0.9; max-width: 500px; margin: 0 auto; }
+.hero p { opacity: 0.9; font-size: 15px; line-height: 1.6; }
 
-.main-card { max-width: 640px; margin: 0 auto 30px; padding: 0 16px; }
-.card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 24px; }
+.plan-tabs { display: flex; justify-content: center; gap: 8px; margin-top: 20px; flex-wrap: wrap; position: relative; z-index: 1; }
+.plan-tab {
+  padding: 10px 24px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 25px;
+  background: transparent;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.plan-tab.active { background: rgba(255,255,255,0.25); border-color: white; }
+.plan-tab:hover { background: rgba(255,255,255,0.15); transform: translateY(-1px); }
 
-.input-section { margin-bottom: 20px; }
-.input-section label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 15px; color: #4a5568; }
-.context-select { width: 100%; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; margin-bottom: 12px; background: white; color: #2d3748; }
-textarea { width: 100%; height: 120px; padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 15px; resize: vertical; font-family: inherit; transition: border-color 0.2s; line-height: 1.6; }
+.main-card { max-width: 600px; margin: -20px auto 0; padding: 0 16px 40px; position: relative; z-index: 2; }
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 28px 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  animation: slideUp 0.6s ease-out 0.3s both;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+label { font-weight: 700; font-size: 15px; display: block; margin-bottom: 8px; color: #2d3748; }
+select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #4a5568;
+  background: white;
+  margin-bottom: 20px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a5568' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  cursor: pointer;
+  min-height: 44px;
+  transition: border-color 0.2s;
+}
+select:focus { outline: none; border-color: #667eea; }
+
+/* Sample text buttons */
+.sample-label { font-size: 13px; color: #718096; margin-bottom: 8px; display: block; }
+.sample-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.sample-btn {
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #f0f0ff, #f5f0ff);
+  border: 1px solid #d6d0f0;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #5a4e8c;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.sample-btn:hover {
+  background: linear-gradient(135deg, #e0e0ff, #ece0ff);
+  border-color: #b0a0e0;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+.sample-btn:active { transform: scale(0.97); }
+
+textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s;
+  line-height: 1.6;
+}
 textarea:focus { outline: none; border-color: #667eea; }
 textarea::placeholder { color: #a0aec0; }
-.char-count { text-align: right; font-size: 12px; color: #a0aec0; margin-top: 4px; }
+.char-count { text-align: right; font-size: 12px; color: #a0aec0; margin-top: 4px; margin-bottom: 16px; }
 
-.analyze-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.1s, box-shadow 0.2s; letter-spacing: 1px; }
-.analyze-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
-.analyze-btn:active { transform: translateY(0); }
-.analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.analyze-btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+  min-height: 52px;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); }
+  50% { box-shadow: 0 4px 25px rgba(102, 126, 234, 0.6); }
+}
+.analyze-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(102, 126, 234, 0.5); }
+.analyze-btn:active:not(:disabled) { transform: translateY(0); }
+.analyze-btn:disabled { opacity: 0.7; cursor: not-allowed; animation: none; }
 
-.usage-info { text-align: center; margin-top: 12px; font-size: 13px; color: #718096; }
-.usage-info strong { color: #667eea; }
+.usage-info { text-align: center; font-size: 13px; color: #718096; margin-top: 12px; }
 
-/* Results */
-.results { display: none; margin-top: 24px; }
-.results.show { display: block; }
+/* Results section */
+.result-section {
+  display: none;
+  margin-top: 24px;
+  animation: resultSlideIn 0.6s ease-out;
+}
+.result-section.show { display: block; }
+@keyframes resultSlideIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-.result-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-.result-header h3 { font-size: 16px; color: #2d3748; }
-.keigo-badge { background: #ebf4ff; color: #3182ce; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.result-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f0f0ff;
+}
+.result-header h2 {
+  font-size: 20px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.keigo-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  background: linear-gradient(135deg, #f0f0ff, #f5f0ff);
+  border: 1px solid #d6d0f0;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5a4e8c;
+  margin-top: 8px;
+}
 
-.analysis-box { background: #f7fafc; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-.analysis-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
-.analysis-row:last-child { border-bottom: none; }
-.analysis-label { font-size: 14px; color: #4a5568; display: flex; align-items: center; gap: 6px; }
-.analysis-value { font-size: 14px; font-weight: 600; }
+.result-block { margin-bottom: 20px; }
+.result-block-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #667eea;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.result-block-content {
+  background: #f8f9ff;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #4a5568;
+  border-left: 3px solid #667eea;
+}
+.honne-content {
+  background: linear-gradient(135deg, #fff5f5, #fff0f5);
+  border-left: 3px solid #e53e3e;
+}
 
-.surface-box, .honne-box { border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-.surface-box { background: #ebf8ff; border-left: 4px solid #3182ce; }
-.honne-box { background: #fff5f5; border-left: 4px solid #e53e3e; }
-.box-label { font-size: 12px; font-weight: 700; color: #718096; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
-.box-text { font-size: 15px; line-height: 1.6; }
+/* Emotion bars */
+.emotion-section { margin-bottom: 20px; }
+.emotion-bar { display: flex; align-items: center; margin-bottom: 10px; gap: 8px; }
+.emotion-name { width: 40px; font-size: 13px; font-weight: 600; text-align: right; flex-shrink: 0; }
+.emotion-track { flex: 1; height: 10px; background: #edf2f7; border-radius: 10px; overflow: hidden; }
+.emotion-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 1s ease-out;
+  animation: barGrow 1s ease-out;
+}
+@keyframes barGrow {
+  from { width: 0 !important; }
+}
+.emotion-value { width: 40px; font-size: 13px; color: #718096; font-weight: 600; }
 
-.emotion-section { margin: 16px 0; }
-.emotion-section h4 { font-size: 14px; color: #4a5568; margin-bottom: 12px; }
-.emotion-bar { display: flex; align-items: center; margin-bottom: 8px; gap: 8px; }
-.emotion-name { width: 70px; font-size: 13px; color: #4a5568; text-align: right; }
-.emotion-track { flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
-.emotion-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
-.emotion-value { width: 35px; font-size: 12px; color: #718096; font-weight: 600; }
+/* Reply cards */
+.replies-section { margin-bottom: 16px; }
+.reply-card {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  min-height: 44px;
+}
+.reply-card:hover { border-color: #667eea; transform: translateX(4px); box-shadow: 0 2px 12px rgba(102, 126, 234, 0.1); }
+.reply-card:active { transform: scale(0.98); }
+.reply-tone {
+  font-size: 11px;
+  font-weight: 700;
+  color: #667eea;
+  background: #f0f0ff;
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+.reply-text { font-size: 14px; line-height: 1.5; color: #4a5568; }
+.copied-msg { color: #38a169; font-size: 12px; font-weight: 600; display: none; margin-top: 4px; }
 
-.reply-section { margin-top: 20px; }
-.reply-section h4 { font-size: 14px; color: #4a5568; margin-bottom: 12px; }
-.reply-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
-.reply-card:hover { border-color: #667eea; box-shadow: 0 2px 8px rgba(102,126,234,0.15); }
-.reply-tone { font-size: 11px; font-weight: 700; color: #667eea; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
-.reply-text { font-size: 14px; line-height: 1.5; color: #2d3748; }
-.copied-msg { font-size: 12px; color: #38a169; font-weight: 600; display: none; margin-top: 4px; }
+/* Screenshot hint */
+.screenshot-hint {
+  text-align: center;
+  margin: 16px 0;
+  padding: 12px;
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border-radius: 12px;
+  font-size: 13px;
+  color: #92400e;
+  font-weight: 600;
+}
 
+/* Share section */
 .share-section { text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
-.share-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: #1da1f2; color: white; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; }
-.share-btn:hover { background: #1a91da; }
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 24px;
+  background: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  min-height: 44px;
+}
+.share-btn:hover { background: #1a91da; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(29, 161, 242, 0.3); }
 
 /* Error message */
 .error-msg { background: #fff5f5; border: 1px solid #feb2b2; border-radius: 8px; padding: 12px; margin-top: 12px; color: #c53030; font-size: 14px; display: none; }
 .error-msg.show { display: block; }
 
-/* Loading animation */
+/* Loading */
 .loading { display: none; text-align: center; padding: 40px 20px; }
 .loading.show { display: block; }
 .loading-text { font-size: 15px; color: #667eea; font-weight: 600; margin-top: 16px; }
-.spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+.spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid #e0e0ff;
+  border-top: 4px solid #667eea;
+  border-right: 4px solid #764ba2;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Plan switcher */
-.plan-switcher { display: flex; justify-content: center; gap: 8px; margin: 20px auto; max-width: 640px; padding: 0 16px; }
-.plan-tab { padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); background: transparent; transition: all 0.2s; }
-.plan-tab.active { background: rgba(255,255,255,0.2); color: white; border-color: white; }
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #a0aec0;
+  font-size: 13px;
+}
 
-footer { text-align: center; padding: 30px; color: #a0aec0; font-size: 13px; }
-
-/* Responsive */
+/* Mobile adjustments */
 @media (max-width: 480px) {
-  .hero h1 { font-size: 22px; }
-  .card { padding: 18px; }
-  .plan-switcher { gap: 4px; }
-  .plan-tab { padding: 6px 12px; font-size: 12px; }
+  .hero h1 { font-size: 24px; }
+  .card { padding: 24px 18px; }
+  .plan-tab { padding: 8px 16px; font-size: 13px; }
+  .sample-buttons { gap: 5px; }
+  .sample-btn { font-size: 12px; padding: 5px 10px; }
 }
 </style>
 </head>
 <body>
 
 <div class="gradient-bg">
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
   <header>
     <div class="logo">
       <div class="logo-icon">
-        <svg width="20" height="20" viewBox="0 0 40 40" fill="none">
-          <g stroke="white" stroke-width="3" stroke-linecap="round">
-            <path d="M 5,10 Q 13,4 21,10 Q 29,16 37,10"/>
-            <path d="M 5,20 Q 13,14 21,20 Q 29,26 37,20"/>
-            <path d="M 5,30 Q 13,24 21,30 Q 29,36 37,30"/>
-          </g>
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="white"/><circle cx="15" cy="9" r="1" fill="white"/></svg>
       </div>
       KuukiAI
     </div>
@@ -140,7 +421,7 @@ footer { text-align: center; padding: 30px; color: #a0aec0; font-size: 13px; }
     <p>LINEやメールのテキストを貼り付けるだけ。<br>隠れた感情と本音を3秒で可視化。</p>
   </div>
 
-  <div class="plan-switcher">
+  <div class="plan-tabs">
     <button class="plan-tab active" onclick="switchPlan('free')">Free</button>
     <button class="plan-tab" onclick="switchPlan('premium')">Premium ¥980</button>
     <button class="plan-tab" onclick="switchPlan('pro')">Pro ¥2,980</button>
@@ -149,26 +430,29 @@ footer { text-align: center; padding: 30px; color: #a0aec0; font-size: 13px; }
 
 <div class="main-card">
   <div class="card">
-    <div class="input-section">
-      <label>会話の場面</label>
-      <select class="context-select" id="contextSelect">
-        <option value="LINE・チャット">LINE・チャット</option>
-        <option value="ビジネスメール">ビジネスメール</option>
-        <option value="SNS投稿">SNS・コメント</option>
-        <option value="その他">その他</option>
-      </select>
+    <label for="contextSelect">会話の場面</label>
+    <select id="contextSelect">
+      <option value="line">LINE・チャット</option>
+      <option value="email">ビジネスメール</option>
+      <option value="sns">SNS・コメント</option>
+      <option value="other">その他</option>
+    </select>
 
-      <label>分析したいテキスト</label>
-      <textarea id="inputText" placeholder="例：「別にいいよ」「大丈夫です、気にしないでください」&#10;&#10;LINEやメールの文章をここに貼り付けてください..." maxlength="500"></textarea>
-      <div class="char-count"><span id="charCount">0</span> / 500文字</div>
+    <label for="inputText">分析したいテキスト</label>
+    <span class="sample-label">タップして試す：</span>
+    <div class="sample-buttons">
+      <button class="sample-btn" onclick="setSample(this)">別にいいよ、好きにすれば</button>
+      <button class="sample-btn" onclick="setSample(this)">大丈夫です、気にしないでください</button>
+      <button class="sample-btn" onclick="setSample(this)">今度また誘ってね</button>
+      <button class="sample-btn" onclick="setSample(this)">お忙しいところすみません</button>
+      <button class="sample-btn" onclick="setSample(this)">へー、そうなんだ</button>
     </div>
+    <textarea id="inputText" maxlength="500" placeholder="例：「別にいいよ」「大丈夫です、気にしないでください」&#10;&#10;LINEやメールの文章をここに貼り付けてください..."></textarea>
+    <div class="char-count"><span id="charCount">0</span> / 500文字</div>
 
-    <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">
-      空気を読む
-    </button>
-    <div class="usage-info" id="usageInfo">
-      本日の残り回数: <strong id="usageCount">3</strong> / 3回（Free プラン）
-    </div>
+    <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">空気を読む</button>
+    <div class="usage-info" id="usageInfo">本日の残り回数: <strong id="usageCount">3</strong> / 3回（Free プラン）</div>
+
     <div class="error-msg" id="errorMsg"></div>
 
     <div class="loading" id="loading">
@@ -176,35 +460,37 @@ footer { text-align: center; padding: 30px; color: #a0aec0; font-size: 13px; }
       <div class="loading-text" id="loadingText">テキストを解析中...</div>
     </div>
 
-    <div class="results" id="results">
+    <div class="result-section" id="results">
       <div class="result-header">
-        <h3>分析結果</h3>
-        <span class="keigo-badge" id="keigoBadge">敬語レベル: --</span>
+        <h2>分析結果</h2>
+        <div class="keigo-badge" id="keigoBadge">敬語レベル: --</div>
       </div>
 
-      <div class="surface-box">
-        <div class="box-label">表面的な意味</div>
-        <div class="box-text" id="surfaceText">--</div>
+      <div class="result-block">
+        <div class="result-block-title">💬 表面的な意味</div>
+        <div class="result-block-content" id="surfaceText">--</div>
       </div>
 
-      <div class="honne-box">
-        <div class="box-label">本音（ホンネ）</div>
-        <div class="box-text" id="honneText">--</div>
+      <div class="result-block">
+        <div class="result-block-title">🎭 本音（ホンネ）</div>
+        <div class="result-block-content honne-content" id="honneText">--</div>
       </div>
 
-      <div class="emotion-section">
-        <h4>感情スコア</h4>
+      <div class="result-block emotion-section">
+        <div class="result-block-title">📊 感情スコア</div>
         <div id="emotionBars"></div>
       </div>
 
-      <div class="reply-section">
-        <h4>おすすめ返信</h4>
+      <div class="result-block replies-section">
+        <div class="result-block-title">💡 おすすめ返信</div>
         <div id="replyCards"></div>
       </div>
 
+      <div class="screenshot-hint">📸 結果をスクショしてシェアしよう！</div>
+
       <div class="share-section">
         <a class="share-btn" id="shareBtn" href="#" target="_blank">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           結果をシェア
         </a>
       </div>
@@ -212,9 +498,7 @@ footer { text-align: center; padding: 30px; color: #a0aec0; font-size: 13px; }
   </div>
 </div>
 
-<footer>
-  &copy; 2026 KuukiAI - AIが会話の空気を読み解きます
-</footer>
+<footer>© 2026 KuukiAI - AIが会話の空気を読み解きます</footer>
 
 <script>
 let currentPlan = 'free';
@@ -222,10 +506,13 @@ let usageLeft = 3;
 
 const textarea = document.getElementById('inputText');
 const charCount = document.getElementById('charCount');
+textarea.addEventListener('input', () => { charCount.textContent = textarea.value.length; });
 
-textarea.addEventListener('input', () => {
-  charCount.textContent = textarea.value.length;
-});
+function setSample(btn) {
+  textarea.value = btn.textContent;
+  charCount.textContent = btn.textContent.length;
+  textarea.focus();
+}
 
 function switchPlan(plan) {
   currentPlan = plan;
@@ -237,7 +524,7 @@ function switchPlan(plan) {
     badge.textContent = 'Free (3/day)';
     usageLeft = 3;
     document.getElementById('usageCount').textContent = '3';
-    usageInfo.innerHTML = '本日の残り回数: <strong>3</strong> / 3回（Free プラン - Gemini Flash）';
+    usageInfo.innerHTML = '本日の残り回数: <strong>3</strong> / 3回（Free プラン）';
   }
   if (plan === 'premium') {
     badge.textContent = 'Premium';
@@ -251,9 +538,6 @@ function switchPlan(plan) {
   }
 }
 
-// ========================================
-// デモ分析データ（APIが使えない時のフォールバック）
-// ========================================
 const demoAnalysis = {
   'default_negative': {
     surface: '表面上は問題ないと伝えている',
@@ -274,20 +558,17 @@ const demoAnalysis = {
     replies: [
       { tone: '感謝型', text: 'ありがとう！そう言ってもらえると本当に嬉しいです。' },
       { tone: '共感型', text: '私も同じ気持ちです！これからもよろしくお願いします。' },
-      { tone: 'カジュアル型', text: 'えー嬉しい！ありがとね！' }
+      { tone: 'カジュアル型', text: 'えー嬉しい！ありがどね！' }
     ]
   }
 };
 
 function analyzeTextLocal(text) {
-  const hasPositive = text.includes('ありがとう') || text.includes('嬉しい') || text.includes('楔しい') || text.includes('最高');
+  const hasPositive = text.includes('ありがとう') || text.includes('嬉しい') || text.includes('最高');
   if (hasPositive) return demoAnalysis['default_positive'];
   return demoAnalysis['default_negative'];
 }
 
-// ========================================
-// メイン分析関数（API呼び出し → フォールバック）
-// ========================================
 async function analyze() {
   const text = document.getElementById('inputText').value.trim();
   if (!text) { alert('テキストを入力してください'); return; }
@@ -296,7 +577,6 @@ async function analyze() {
     return;
   }
 
-  // UIを更新
   const errorMsg = document.getElementById('errorMsg');
   errorMsg.classList.remove('show');
   document.getElementById('results').classList.remove('show');
@@ -307,15 +587,12 @@ async function analyze() {
   let phase = 0;
   const phaseInterval = setInterval(() => {
     phase++;
-    if (phase < phases.length) {
-      document.getElementById('loadingText').textContent = phases[phase];
-    }
+    if (phase < phases.length) document.getElementById('loadingText').textContent = phases[phase];
   }, 800);
 
   const scene = document.getElementById('contextSelect').value;
 
   try {
-    // まずAPIを試す
     const response = await fetch('/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -323,20 +600,16 @@ async function analyze() {
     });
 
     clearInterval(phaseInterval);
-
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
       throw new Error(errData.error || 'API呼び出しに失敗しました');
     }
 
     const result = await response.json();
-
-    // 使用回数を更新
     if (currentPlan === 'free') {
       usageLeft--;
       document.getElementById('usageCount').textContent = usageLeft;
     }
-
     document.getElementById('loading').classList.remove('show');
     document.getElementById('analyzeBtn').disabled = false;
     displayResult(result, text);
@@ -344,21 +617,15 @@ async function analyze() {
   } catch (error) {
     console.warn('API unavailable, using demo mode:', error.message);
     clearInterval(phaseInterval);
-
-    // APIが使えない場合はデモモードにフォールバック
     setTimeout(() => {
       document.getElementById('loading').classList.remove('show');
       document.getElementById('analyzeBtn').disabled = false;
-
       if (currentPlan === 'free') {
         usageLeft--;
         document.getElementById('usageCount').textContent = usageLeft;
       }
-
       const result = analyzeTextLocal(text);
       displayResult(result, text);
-
-      // デモモードであることを通知
       errorMsg.textContent = '現在デモモードで動作しています（AI APIに接続できませんでした）';
       errorMsg.classList.add('show');
     }, 1500);
@@ -372,8 +639,7 @@ function displayResult(result, originalText) {
   const keigoLabels = ['', 'タメ口', 'カジュアル', '標準敬語', '丁寧', '最上級敬語'];
   document.getElementById('keigoBadge').textContent = '敬語レベル: ' + keigoLabels[result.keigo];
 
-  // Emotion bars
-  const emotionColors = { '怒り': '#e53e3e', '不満': '#ed8936', '期待': '#38b2ac', '好意': '#38a169', '不安': '#805ad5' };
+  const emotionColors = { '怕り': '#e53e3e', '不満': '#ed8936', '期待': '#38b2ac', '好意': '#38a169', '不安': '#805ad5' };
   const barsHtml = Object.entries(result.emotions).map(([name, value]) => `
     <div class="emotion-bar">
       <span class="emotion-name">${name}</span>
@@ -385,7 +651,6 @@ function displayResult(result, originalText) {
   `).join('');
   document.getElementById('emotionBars').innerHTML = barsHtml;
 
-  // Reply cards
   const repliesHtml = result.replies.map((r, i) => `
     <div class="reply-card" onclick="copyReply(this, '${r.text.replace(/'/g, "\\'")}')">
       <div class="reply-tone">${r.tone}</div>
@@ -395,11 +660,13 @@ function displayResult(result, originalText) {
   `).join('');
   document.getElementById('replyCards').innerHTML = repliesHtml;
 
-  // Share button
-  const shareText = encodeURIComponent(`KuukiAIで「${originalText.substring(0, 20)}...」を分析してみた！\n本音が丸見えで怖い...\n\n#KuukiAI #空気読みAI`);
+  const shareText = encodeURIComponent(`KuukiAIで会話を分析してみた！\n本音が丸見えで怖い...\n\nhttps://kuukiai.vercel.app\n\n#KuukiAI #空気読みAI #AI分析`);
   document.getElementById('shareBtn').href = `https://twitter.com/intent/tweet?text=${shareText}`;
 
   document.getElementById('results').classList.add('show');
+  setTimeout(() => {
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
 }
 
 function copyReply(card, text) {
@@ -410,6 +677,5 @@ function copyReply(card, text) {
   });
 }
 </script>
-
 </body>
 </html>
