@@ -1,4 +1,4 @@
-h<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -7,7 +7,7 @@ h<!DOCTYPE html>
 <meta name="description" content="LINEやメールの本音を3秒で可視化。AIが会話の空気を読み解く無料ツール。">
 <meta property="og:title" content="KuukiAI - AIが会話の空気を読み解きます">
 <meta property="og:description" content="LINEやメールの本音を3秒で可視化。無料で使えます。">
-<meta property="og:type" content="website">h
+<meta property="og:type" content="website">
 <meta property="og:image" content="https://kuukiai.vercel.app/ogp.png">
 <meta property="og:url" content="https://kuukiai.vercel.app">
 <meta name="twitter:image" content="https://kuukiai.vercel.app/ogp.png">
@@ -358,6 +358,44 @@ textarea::placeholder { color: #a0aec0; }
 }
 .share-btn:hover { background: #1a91da; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(29, 161, 242, 0.3); }
 
+/* Pro-exclusive deep analysis */
+.pro-section { display: none; }
+.pro-section.show { display: block; }
+.pro-label {
+  display: inline-block;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.pro-block-content {
+  background: linear-gradient(135deg, #f5f0ff, #f0f0ff);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #4a5568;
+  border-left: 3px solid #764ba2;
+}
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.risk-safe { background: #f0fff4; color: #276749; border: 1px solid #9ae6b4; }
+.risk-caution { background: #fffff0; color: #975a16; border: 1px solid #fbd38d; }
+.risk-warning { background: #fff5f5; color: #9b2c2c; border: 1px solid #feb2b2; }
+.risk-message { font-size: 13px; color: #718096; margin-top: 6px; }
+
 /* Error message */
 .error-msg { background: #fff5f5; border: 1px solid #feb2b2; border-radius: 8px; padding: 12px; margin-top: 12px; color: #c53030; font-size: 14px; display: none; }
 .error-msg.show { display: block; }
@@ -486,6 +524,32 @@ footer {
         <div id="replyCards"></div>
       </div>
 
+      <!-- Pro専用: 深層分析セクション -->
+      <div class="pro-section" id="proSection">
+        <div class="result-block">
+          <div class="result-block-title">🧠 心理的背景 <span class="pro-label">PRO</span></div>
+          <div class="pro-block-content" id="psychologyText">--</div>
+        </div>
+
+        <div class="result-block">
+          <div class="result-block-title">⚡ 人間関係の力学 <span class="pro-label">PRO</span></div>
+          <div class="pro-block-content" id="dynamicsText">--</div>
+        </div>
+
+        <div class="result-block">
+          <div class="result-block-title">⚠️ 危険度シグナル <span class="pro-label">PRO</span></div>
+          <div id="riskSignalArea">
+            <div class="risk-badge risk-safe" id="riskBadge">--</div>
+            <div class="risk-message" id="riskMessage"></div>
+          </div>
+        </div>
+
+        <div class="result-block">
+          <div class="result-block-title">🏯 文化的コンテキスト <span class="pro-label">PRO</span></div>
+          <div class="pro-block-content" id="culturalNoteText">--</div>
+        </div>
+      </div>
+
       <div class="screenshot-hint">📸 結果をスクショしてシェアしよう！</div>
 
       <div class="share-section">
@@ -556,9 +620,9 @@ const demoAnalysis = {
     emotions: { '怒り': 5, '不満': 5, '期待': 70, '好意': 85, '不安': 10 },
     keigo: 2,
     replies: [
-      { tone: '感謝型', text: 'ありがとう！そう言ってもらえると本当に嬹しいです。' },
+      { tone: '感謝型', text: 'ありがとう！そう言ってもらえると本当に嬉しいです。' },
       { tone: '共感型', text: '私も同じ気持ちです！これからもよろしくお願いします。' },
-      { tone: 'カジュアル型', text: 'えー嬹しい！ありがとね！' }
+      { tone: 'カジュアル型', text: 'えー嬉しい！ありがとね！' }
     ]
   }
 };
@@ -662,6 +726,25 @@ function displayResult(result, originalText) {
 
   const shareText = encodeURIComponent(`KuukiAIで会話を分析してみた！\n本音が丸見えで怖い...\n\nhttps://kuukiai.vercel.app\n\n#KuukiAI #空気読みAI #AI分析`);
   document.getElementById('shareBtn').href = `https://twitter.com/intent/tweet?text=${shareText}`;
+
+  // Pro専用フィールドの表示/非表示
+  const proSection = document.getElementById('proSection');
+  if (currentPlan === 'pro' && result.psychology) {
+    proSection.classList.add('show');
+    document.getElementById('psychologyText').textContent = result.psychology;
+    document.getElementById('dynamicsText').textContent = result.dynamics || '--';
+    document.getElementById('culturalNoteText').textContent = result.culturalNote || '--';
+
+    // リスクシグナル
+    const riskBadge = document.getElementById('riskBadge');
+    const risk = result.riskSignal || { level: 'safe', message: '' };
+    riskBadge.className = 'risk-badge risk-' + risk.level;
+    const riskLabels = { safe: '✅ 安全', caution: '⚡ 注意', warning: '🚨 警告' };
+    riskBadge.textContent = riskLabels[risk.level] || '✅ 安全';
+    document.getElementById('riskMessage').textContent = risk.message || '';
+  } else {
+    proSection.classList.remove('show');
+  }
 
   document.getElementById('results').classList.add('show');
   setTimeout(() => {
