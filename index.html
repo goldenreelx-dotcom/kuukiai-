@@ -117,7 +117,7 @@ header {
 .plan-tab.active { background: rgba(255,255,255,0.25); border-color: white; }
 .plan-tab:hover { background: rgba(255,255,255,0.15); transform: translateY(-1px); }
 
-.main-card { max-width: 600px; margin: -20px auto 0; padding: 0 16px 40px; position: relative; z-index: 2; }
+.main-card { max-width: 600px; margin: 24px auto 0; padding: 0 16px 40px; position: relative; z-index: 2; }
 .card {
   background: white;
   border-radius: 20px;
@@ -417,12 +417,7 @@ footer {
   </header>
 
   <div class="hero">
-    <h1>AIが会話の「空気」を<br>読み解きます</h1>
-    <p>LINEやメールのテキストを貼り付けるだけ。<br>隠れた感情と本音を3秒で可視化。</p>
-  </div>
-
-  <div class="plan-tabs">
-    <button class="plan-tab active" onclick="switchPlan('free')">Free</button>
+    <h1>AIが会話の「空気」を<br>読み解きます</h1<button class="plan-tab active" onclick="switchPlan('free')">Free</button>
     <button class="plan-tab" onclick="switchPlan('premium')">Premium ¥980</button>
     <button class="plan-tab" onclick="switchPlan('pro')">Pro ¥2,980</button>
   </div>
@@ -556,9 +551,9 @@ const demoAnalysis = {
     emotions: { '怒り': 5, '不満': 5, '期待': 70, '好意': 85, '不安': 10 },
     keigo: 2,
     replies: [
-      { tone: '感謝型', text: 'ありがとう！そう言ってもらえると本当に嬉しいです。' },
+      { tone: '感謝型', text: 'ありがとう！そう言ってもらえると本当に嬹しいです。' },
       { tone: '共感型', text: '私も同じ気持ちです！これからもよろしくお願いします。' },
-      { tone: 'カジュアル型', text: 'えー嬉しい！ありがどね！' }
+      { tone: 'カジュアル型', text: 'えー嬹しい！ありがとね！' }
     ]
   }
 };
@@ -639,7 +634,7 @@ function displayResult(result, originalText) {
   const keigoLabels = ['', 'タメ口', 'カジュアル', '標準敬語', '丁寧', '最上級敬語'];
   document.getElementById('keigoBadge').textContent = '敬語レベル: ' + keigoLabels[result.keigo];
 
-  const emotionColors = { '怕り': '#e53e3e', '不満': '#ed8936', '期待': '#38b2ac', '好意': '#38a169', '不安': '#805ad5' };
+  const emotionColors = { '怒り': '#e53e3e', '不満': '#ed8936', '期待': '#38b2ac', '好意': '#38a169', '不安': '#805ad5' };
   const barsHtml = Object.entries(result.emotions).map(([name, value]) => `
     <div class="emotion-bar">
       <span class="emotion-name">${name}</span>
