@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KuukiAI - AIが会話の「空気」を読み解きます</title>
-<meta name="description" content="LINEやメールの本音を3秒で可視化。AIが会話の空気を読み解く無料ツール。">
+<meta name="description" content="LINEやメールの本音を3秒で可視化。AIが会話の空気を読み解き無料ツール。">
 <meta property="og:title" content="KuukiAI - AIが会話の空気を読み解きます">
-<meta property="og:description" content="LINEやメールの本音を3秒で可視化。無料で使えます。">
+<meta property="og:description" content="LINEやメールの本音を3秒で可視化。無料でみえます。">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://kuukiai.vercel.app/ogp.png">
 <meta property="og:url" content="https://kuukiai.vercel.app">
@@ -422,9 +422,9 @@ footer {
   </div>
 
   <div class="plan-tabs">
-    <button class="plan-tab active" onclick="switchPlan('free')">Free</button>
-    <button class="plan-tab" onclick="switchPlan('premium')">Premium ¥980</button>
-    <button class="plan-tab" onclick="switchPlan('pro')">Pro ¥2,980</button>
+    <button class="plan-tab active" onclick="switchPlan('free', this)">Free</button>
+    <button class="plan-tab" onclick="switchPlan('premium', this)">Premium ¥980</button>
+    <button class="plan-tab" onclick="switchPlan('pro', this)">Pro ¥2,980</button>
   </div>
 </div>
 
@@ -514,10 +514,10 @@ function setSample(btn) {
   textarea.focus();
 }
 
-function switchPlan(plan) {
+function switchPlan(plan, btn) {
   currentPlan = plan;
   document.querySelectorAll('.plan-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+  btn.classList.add('active');
   const badge = document.getElementById('planBadge');
   const usageInfo = document.getElementById('usageInfo');
   if (plan === 'free') {
@@ -558,7 +558,7 @@ const demoAnalysis = {
     replies: [
       { tone: '感謝型', text: 'ありがとう！そう言ってもらえると本当に嬉しいです。' },
       { tone: '共感型', text: '私も同じ気持ちです！これからもよろしくお願いします。' },
-      { tone: 'カジュアル型', text: 'えー嬹しい！ありがとね！' }
+      { tone: 'カジュアル型', text: 'えヽ嬉しい！ありがとね！' }
     ]
   }
 };
@@ -660,7 +660,7 @@ function displayResult(result, originalText) {
   `).join('');
   document.getElementById('replyCards').innerHTML = repliesHtml;
 
-  const shareText = encodeURIComponent(`KuukiAIで会話を分析してみた！\n本音が丸見えで怖い...\n\nhttps://kuukiai.vercel.app\n\n#KuukiAI #空気読みAI #AI分析`);
+  const shareText = encodeURIComponent(`KuukiAIで会話を分析してみた！\n本音が丸見えで怙い...\n\nhttps://kuukiai.vercel.app\n\n#KuukiAI #空気読みAI #AI分析`);
   document.getElementById('shareBtn').href = `https://twitter.com/intent/tweet?text=${shareText}`;
 
   document.getElementById('results').classList.add('show');
