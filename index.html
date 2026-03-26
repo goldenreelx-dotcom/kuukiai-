@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KuukiAI - AIが会話の「空気」を読み解きます</title>
-<meta name="description" content="LINEやメールの本音を3秒で可視化。AIが会話の空気を読み解き無料ツール。">
+<meta name="description" content="LINEやメールの本音を3秒で可視化。AIが会話の空気を読み解く無料ツール。">
 <meta property="og:title" content="KuukiAI - AIが会話の空気を読み解きます">
-<meta property="og:description" content="LINEやメールの本音を3秒で可視化。無料でみえます。">
+<meta property="og:description" content="LINEやメールの本音を3秒で可視化。無料で使えます。">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://kuukiai.vercel.app/ogp.png">
 <meta property="og:url" content="https://kuukiai.vercel.app">
@@ -424,7 +424,7 @@ footer {
   <div class="plan-tabs">
     <button class="plan-tab active" onclick="switchPlan('free', this)">Free</button>
     <button class="plan-tab" onclick="switchPlan('premium', this)">Premium ¥980</button>
-    <button class="plan-tab" onclick="switchPlan('pro', this)">Pro ¥2,980</button>
+    <button class="plan-tab" onclick="switchPlan('pro', this)">Pro ¥1,980</button>
   </div>
 </div>
 
@@ -528,13 +528,13 @@ function switchPlan(plan, btn) {
   }
   if (plan === 'premium') {
     badge.textContent = 'Premium';
-    usageLeft = 999;
-    usageInfo.innerHTML = '無制限（Premium プラン - Gemini Pro）';
+    usageLeft = 30;
+    usageInfo.innerHTML = '本日の残り回数: <strong>30</strong> / 30回（Premium プラン - Gemini Pro）';
   }
   if (plan === 'pro') {
     badge.textContent = 'Pro';
-    usageLeft = 999;
-    usageInfo.innerHTML = '無制限 + 深層分析（Pro プラン - Gemini Pro）';
+    usageLeft = 100;
+    usageInfo.innerHTML = '本日の残り回数: <strong>100</strong> / 100回（Pro プラン - 深層分析）';
   }
 }
 
@@ -556,9 +556,9 @@ const demoAnalysis = {
     emotions: { '怒り': 5, '不満': 5, '期待': 70, '好意': 85, '不安': 10 },
     keigo: 2,
     replies: [
-      { tone: '感謝型', text: 'ありがとう！そう言ってもらえると本当に嬉しいです。' },
+      { tone: '感謝型', text: 'ありがとう！そう言ってもらえると本当に嬹しいです。' },
       { tone: '共感型', text: '私も同じ気持ちです！これからもよろしくお願いします。' },
-      { tone: 'カジュアル型', text: 'えヽ嬉しい！ありがとね！' }
+      { tone: 'カジュアル型', text: 'えー嬹しい！ありがとね！' }
     ]
   }
 };
@@ -572,8 +572,12 @@ function analyzeTextLocal(text) {
 async function analyze() {
   const text = document.getElementById('inputText').value.trim();
   if (!text) { alert('テキストを入力してください'); return; }
-  if (currentPlan === 'free' && usageLeft <= 0) {
-    alert('本日の無料回数を使い切りました。\nPremiumプランにアップグレードすると無制限で使えます。');
+  if (usageLeft <= 0) {
+    if (currentPlan === 'free') {
+      alert('本日の無料回数を使い切りました。\nPremiumプラン（¥980/月）で30回/日、Proプラン（¥1,980/月）で100回/日使えます。');
+    } else {
+      alert('本日の利用回数を使い切りました。明日リセットされます。');
+    }
     return;
   }
 
@@ -606,10 +610,8 @@ async function analyze() {
     }
 
     const result = await response.json();
-    if (currentPlan === 'free') {
-      usageLeft--;
-      document.getElementById('usageCount').textContent = usageLeft;
-    }
+    usageLeft--;
+    document.getElementById('usageCount').textContent = usageLeft;
     document.getElementById('loading').classList.remove('show');
     document.getElementById('analyzeBtn').disabled = false;
     displayResult(result, text);
@@ -620,10 +622,8 @@ async function analyze() {
     setTimeout(() => {
       document.getElementById('loading').classList.remove('show');
       document.getElementById('analyzeBtn').disabled = false;
-      if (currentPlan === 'free') {
-        usageLeft--;
-        document.getElementById('usageCount').textContent = usageLeft;
-      }
+      usageLeft--;
+      document.getElementById('usageCount').textContent = usageLeft;
       const result = analyzeTextLocal(text);
       displayResult(result, text);
       errorMsg.textContent = '現在デモモードで動作しています（AI APIに接続できませんでした）';
@@ -660,7 +660,7 @@ function displayResult(result, originalText) {
   `).join('');
   document.getElementById('replyCards').innerHTML = repliesHtml;
 
-  const shareText = encodeURIComponent(`KuukiAIで会話を分析してみた！\n本音が丸見えで怙い...\n\nhttps://kuukiai.vercel.app\n\n#KuukiAI #空気読みAI #AI分析`);
+  const shareText = encodeURIComponent(`KuukiAIで会話を分析してみた！\n本音が丸見えで怗い...\n\nhttps://kuukiai.vercel.app\n\n#KuukiAI #空気読みAI #AI分析`);
   document.getElementById('shareBtn').href = `https://twitter.com/intent/tweet?text=${shareText}`;
 
   document.getElementById('results').classList.add('show');
