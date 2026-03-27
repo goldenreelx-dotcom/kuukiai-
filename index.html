@@ -633,6 +633,7 @@
       font-size: 14px;
       color: #92400e;
       margin-bottom: 20px;
+      text-align: left;
     }
 
     /* Share buttons for diagnosis */
@@ -677,7 +678,8 @@
       max-width: 400px;
       border-radius: 16px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      margin-bottom: 20px;
+      margin: 0 auto 20px auto;
+      display: block;
     }
 
     .diagnosis-reset-btn {
@@ -871,7 +873,7 @@
     </footer>
   </div>
 
-  <canvas id="diagnosisCanvas" width="1080" height="1350"></canvas>
+  <canvas id="diagnosisCanvas" width="1080" height="1600"></canvas>
 
   <script>
     let currentScene = 'LINE・チャット';
@@ -1163,22 +1165,39 @@
       const canvas = document.getElementById('diagnosisCanvas');
       const ctx = canvas.getContext('2d');
       const W = 1080;
-      const H = 1350;
+      const cardX = 60, cardY = 140, cardW = W - 120;
+      const colMaxW = cardW - 140;
 
-      // Background gradient
+      // Pass 1: measure content height
+      ctx.font = '26px -apple-system, sans-serif';
+      const descLines = wrapText(ctx, result.description || '', cardW - 100, 4);
+      let calcY = 520 + descLines.length * 38 + 30;
+      calcY += Object.keys(result.stats || {}).length * 44 + 30;
+
+      ctx.font = '22px -apple-system, sans-serif';
+      const strengths = result.strengths || [];
+      const weaknesses = result.weaknesses || [];
+      calcY += 36;
+      strengths.forEach(s => { calcY += wrapText(ctx, '✅ ' + s, colMaxW).length * 30 + 4; });
+      calcY += 52;
+      weaknesses.forEach(w => { calcY += wrapText(ctx, '😅 ' + w, colMaxW).length * 30 + 4; });
+
+      const H = Math.max(calcY + 200, 1350);
+      canvas.height = H;
+
+      // Pass 2: draw everything
       const bgGrad = ctx.createLinearGradient(0, 0, W, H);
       bgGrad.addColorStop(0, '#667eea');
       bgGrad.addColorStop(1, '#764ba2');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, W, H);
 
-      // White card area
-      const cardX = 60, cardY = 140, cardW = W - 120, cardH = H - 280;
+      // White card
       ctx.fillStyle = 'white';
-      roundRect(ctx, cardX, cardY, cardW, cardH, 30);
+      roundRect(ctx, cardX, cardY, cardW, H - 280, 30);
       ctx.fill();
 
-      // Logo text at top
+      // Logo
       ctx.fillStyle = 'rgba(255,255,255,0.9)';
       ctx.font = 'bold 36px -apple-system, sans-serif';
       ctx.textAlign = 'center';
@@ -1198,10 +1217,9 @@
       ctx.font = '30px -apple-system, sans-serif';
       ctx.fillText('〜 ' + (result.title || '') + ' 〜', W / 2, 460);
 
-      // Description (wrapped)
+      // Description
       ctx.fillStyle = '#4a5568';
       ctx.font = '26px -apple-system, sans-serif';
-      const descLines = wrapText(ctx, result.description || '', cardW - 100);
       let descY = 520;
       descLines.forEach(line => {
         ctx.fillText(line, W / 2, descY);
@@ -1212,22 +1230,18 @@
       const stats = result.stats || {};
       const statEntries = Object.entries(stats);
       let statY = descY + 30;
-
       ctx.textAlign = 'right';
       ctx.font = 'bold 24px -apple-system, sans-serif';
 
       statEntries.forEach(([name, value]) => {
-        // Label
         ctx.fillStyle = '#4a5568';
         ctx.textAlign = 'right';
         ctx.fillText(name, cardX + 140, statY + 6);
 
-        // Track bg
         ctx.fillStyle = '#edf2f7';
         roundRect(ctx, cardX + 160, statY - 10, 640, 20, 10);
         ctx.fill();
 
-        // Fill
         const fillGrad = ctx.createLinearGradient(cardX + 160, 0, cardX + 160 + 640, 0);
         fillGrad.addColorStop(0, '#667eea');
         fillGrad.addColorStop(1, '#764ba2');
@@ -1235,50 +1249,45 @@
         roundRect(ctx, cardX + 160, statY - 10, 640 * (value / 100), 20, 10);
         ctx.fill();
 
-        // Value
         ctx.fillStyle = '#718096';
         ctx.textAlign = 'left';
         ctx.font = 'bold 22px -apple-system, sans-serif';
         ctx.fillText(value.toString(), cardX + 820, statY + 6);
         ctx.font = 'bold 24px -apple-system, sans-serif';
-
         statY += 44;
       });
 
-      // Strengths
+      // Strengths (full width)
       let swY = statY + 30;
       ctx.textAlign = 'left';
       ctx.fillStyle = '#38a169';
       ctx.font = 'bold 26px -apple-system, sans-serif';
       ctx.fillText('💪 強み', cardX + 60, swY);
-
-      ctx.fillStyle = '#e53e3e';
-      ctx.fillText('😂 あるある', W / 2 + 20, swY);
-
+      swY += 36;
       ctx.font = '22px -apple-system, sans-serif';
       ctx.fillStyle = '#4a5568';
+      strengths.forEach(s => {
+        wrapText(ctx, '✅ ' + s, colMaxW).forEach(line => { ctx.fillText(line, cardX + 60, swY); swY += 30; });
+        swY += 4;
+      });
+
+      swY += 16;
+      ctx.fillStyle = '#e53e3e';
+      ctx.font = 'bold 26px -apple-system, sans-serif';
+      ctx.fillText('😂 あるある', cardX + 60, swY);
       swY += 36;
-
-      const strengths = result.strengths || [];
-      const weaknesses = result.weaknesses || [];
-      const maxSW = Math.max(strengths.length, weaknesses.length);
-
-      for (let i = 0; i < maxSW; i++) {
-        if (strengths[i]) {
-          ctx.fillText('✅ ' + strengths[i], cardX + 60, swY);
-        }
-        if (weaknesses[i]) {
-          ctx.fillText('😅 ' + weaknesses[i], W / 2 + 20, swY);
-        }
-        swY += 34;
-      }
+      ctx.font = '22px -apple-system, sans-serif';
+      ctx.fillStyle = '#4a5568';
+      weaknesses.forEach(w => {
+        wrapText(ctx, '😅 ' + w, colMaxW).forEach(line => { ctx.fillText(line, cardX + 60, swY); swY += 30; });
+        swY += 4;
+      });
 
       // Bottom CTA
       ctx.fillStyle = 'rgba(255,255,255,0.9)';
       ctx.font = 'bold 28px -apple-system, sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('あなたも診断してみて → kuukiai.vercel.app', W / 2, H - 80);
-
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.font = '22px -apple-system, sans-serif';
       ctx.fillText('#KuukiAI #空気読みタイプ診断', W / 2, H - 40);
@@ -1303,7 +1312,7 @@
       ctx.closePath();
     }
 
-    function wrapText(ctx, text, maxWidth) {
+    function wrapText(ctx, text, maxWidth, maxLines) {
       const lines = [];
       let line = '';
       for (const char of text) {
@@ -1316,7 +1325,7 @@
         }
       }
       if (line) lines.push(line);
-      return lines.slice(0, 4);
+      return lines.slice(0, maxLines || 10);
     }
 
     function downloadDiagnosisImage() {
