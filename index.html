@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KuukiAI - ç©ºæ°èª­ã¿AI</title>
+  <title>KuukiAI - 空気読みAI</title>
   <style>
     * {
       margin: 0;
@@ -614,8 +614,8 @@
       line-height: 1.4;
     }
 
-    .sw-good li::before { content: 'â '; }
-    .sw-bad li::before { content: 'ð '; }
+    .sw-good li::before { content: '✅ '; }
+    .sw-bad li::before { content: '😅 '; }
 
     .diagnosis-compat {
       background: linear-gradient(135deg, #f0fff4, #f0f4ff);
@@ -720,76 +720,76 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>ð® KuukiAI</h1>
-      <p>ã¡ãã»ã¼ã¸ã®ãç©ºæ°ããèª­ãAI</p>
+      <h1>🔮 KuukiAI</h1>
+      <p>メッセージの「空気」を読むAI</p>
     </div>
 
     <div class="main-card">
       <!-- Input Section -->
       <div class="input-section">
-        <div class="section-title">ð ã¡ãã»ã¼ã¸ãå¥å</div>
+        <div class="section-title">📝 メッセージを入力</div>
         <div class="textarea-wrapper">
-          <textarea id="inputText" placeholder="ç©ºæ°ãèª­ãã§ã»ããã¡ãã»ã¼ã¸ãå¥åãã¦ãã ãã..."></textarea>
+          <textarea id="inputText" placeholder="空気を読んでほしいメッセージを入力してください..."></textarea>
           <div class="char-count"><span id="charCount">0</span>/2000</div>
         </div>
       </div>
 
       <!-- Scene Selection -->
       <div class="scene-section">
-        <div class="section-title">ð­ å ´é¢ãé¸æ</div>
+        <div class="section-title">🎭 場面を選択</div>
         <div class="scene-buttons">
-          <button class="scene-btn active" onclick="setScene(this, 'LINEã»ãã£ãã')">LINEã»ãã£ãã</button>
-          <button class="scene-btn" onclick="setScene(this, 'ãã¸ãã¹ã¡ã¼ã«')">ãã¸ãã¹ã¡ã¼ã«</button>
-          <button class="scene-btn" onclick="setScene(this, 'SNSæç¨¿')">SNSæç¨¿</button>
-          <button class="scene-btn" onclick="setScene(this, 'ãã®ä»')">ãã®ä»</button>
+          <button class="scene-btn active" onclick="setScene(this, 'LINE・チャット')">LINE・チャット</button>
+          <button class="scene-btn" onclick="setScene(this, 'ビジネスメール')">ビジネスメール</button>
+          <button class="scene-btn" onclick="setScene(this, 'SNS投稿')">SNS投稿</button>
+          <button class="scene-btn" onclick="setScene(this, 'その他')">その他</button>
         </div>
       </div>
 
       <!-- Plan Selection -->
       <div class="plan-section">
-        <div class="section-title">ð åæã¬ãã«ãé¸æ</div>
+        <div class="section-title">💎 分析レベルを選択</div>
         <div class="plan-buttons">
           <button class="plan-btn active" onclick="setPlan(this, 'free')">
-            <div style="font-weight: 700;">ç¡æ</div>
-            <div style="font-size: 12px; opacity: 0.7;">æ¨æºåæ</div>
+            <div style="font-weight: 700;">無料</div>
+            <div style="font-size: 12px; opacity: 0.7;">標準分析</div>
           </button>
           <button class="plan-btn" onclick="setPlan(this, 'premium')">
-            <div style="font-weight: 700;">ãã¬ãã¢ã </div>
-            <div style="font-size: 12px; opacity: 0.7;">è©³ç´°åæ</div>
+            <div style="font-weight: 700;">プレミアム</div>
+            <div style="font-size: 12px; opacity: 0.7;">詳細分析</div>
           </button>
           <button class="plan-btn" onclick="setPlan(this, 'pro')">
-            <div style="font-weight: 700;">ãã­</div>
-            <div style="font-size: 12px; opacity: 0.7;">æ·±å±¤åæ</div>
+            <div style="font-weight: 700;">プロ</div>
+            <div style="font-size: 12px; opacity: 0.7;">深層分析</div>
           </button>
         </div>
       </div>
 
       <!-- Analyze Button -->
-      <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">ð ç©ºæ°ãèª­ã</button>
+      <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">🔍 空気を読む</button>
 
       <!-- Results -->
       <div class="results" id="results">
         <!-- Surface meaning -->
         <div class="result-card">
-          <div class="result-label">ð è¡¨é¢çãªæå³</div>
+          <div class="result-label">📌 表面的な意味</div>
           <div class="result-text" id="surfaceResult"></div>
         </div>
 
         <!-- True Intentions -->
         <div class="result-card honne">
-          <div class="result-label">ð­ æ¬é³ã®æ¨å®</div>
+          <div class="result-label">💭 本音の推定</div>
           <div class="result-text" id="honneResult"></div>
         </div>
 
         <!-- Emotions -->
         <div class="emotions-chart">
-          <div style="font-weight: 700; color: #2d3748; margin-bottom: 12px;">â¤ï¸ ææã¹ã³ã¢</div>
+          <div style="font-weight: 700; color: #2d3748; margin-bottom: 12px;">❤️ 感情スコア</div>
           <div id="emotionsResult"></div>
         </div>
 
         <!-- Keigo Level -->
         <div class="keigo-level">
-          <div class="keigo-label">ð æ¬èªã¬ãã«</div>
+          <div class="keigo-label">🎀 敬語レベル</div>
           <div class="keigo-bar">
             <div id="keigoLevel1" class="keigo-level-item"></div>
             <div id="keigoLevel2" class="keigo-level-item"></div>
@@ -802,7 +802,7 @@
 
         <!-- Replies -->
         <div class="replies-section">
-          <div style="font-weight: 700; color: #2d3748; margin-bottom: 12px;">ð¬ ããããã®è¿ä¿¡</div>
+          <div style="font-weight: 700; color: #2d3748; margin-bottom: 12px;">💬 おすすめの返信</div>
           <div class="replies-grid" id="repliesResult"></div>
         </div>
       </div>
@@ -812,16 +812,16 @@
     <div class="diagnosis-section" id="diagnosisSection">
       <div class="diagnosis-card">
         <div class="diagnosis-header">
-          <h3>ð® ããªãã®ç©ºæ°èª­ã¿ã¿ã¤ãè¨ºæ­</h3>
+          <h3>🔮 あなたの空気読みタイプ診断</h3>
           <div class="diagnosis-progress" id="diagnosisProgress">
-            åæåæ°: <strong id="diagnosisCount">0</strong> / 5åï¼ãã¨<strong id="diagnosisRemaining">5</strong>åã§è¨ºæ­å¯è½ï¼
+            分析回数: <strong id="diagnosisCount">0</strong> / 5回（あと<strong id="diagnosisRemaining">5</strong>回で診断可能）
           </div>
           <div class="diagnosis-progress-bar">
             <div class="diagnosis-progress-fill" id="diagnosisProgressFill" style="width: 0%"></div>
           </div>
         </div>
         <button class="diagnose-btn diagnose-btn-locked" id="diagnoseBtn" onclick="runDiagnosis()" disabled>
-          ð ãã¨5ååæããã¨è¨ºæ­ã§ãã¾ã
+          🔒 あと5回分析すると診断できます
         </button>
 
         <div class="diagnosis-result" id="diagnosisResult">
@@ -834,11 +834,11 @@
 
           <div class="diagnosis-sw">
             <div class="diagnosis-sw-col sw-good">
-              <h4>ðª å¼·ã¿</h4>
+              <h4>💪 強み</h4>
               <ul id="diagStrengths"></ul>
             </div>
             <div class="diagnosis-sw-col sw-bad">
-              <h4>ð ãããã</h4>
+              <h4>😂 あるある</h4>
               <ul id="diagWeaknesses"></ul>
             </div>
           </div>
@@ -851,30 +851,30 @@
           <div class="diagnosis-share">
             <a class="diagnosis-share-btn share-x" id="diagShareX" href="#" target="_blank">
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              Xã§ã·ã§ã¢
+              Xでシェア
             </a>
             <a class="diagnosis-share-btn share-line" id="diagShareLine" href="#" target="_blank">
-              LINEã§éã
+              LINEで送る
             </a>
             <button class="diagnosis-share-btn share-download" id="diagDownloadBtn" onclick="downloadDiagnosisImage()">
-              ð¥ ç»åãä¿å­
+              📥 画像を保存
             </button>
           </div>
 
-          <button class="diagnosis-reset-btn" onclick="resetDiagnosis()">è¨ºæ­ããªã»ãããã¦æåãã</button>
+          <button class="diagnosis-reset-btn" onclick="resetDiagnosis()">診断をリセットして最初から</button>
         </div>
       </div>
     </div>
 
     <footer>
-      <p>Â© 2024 KuukiAI. All rights reserved. | <a href="https://kuukiai.vercel.app">Website</a></p>
+      <p>© 2024 KuukiAI. All rights reserved. | <a href="https://kuukiai.vercel.app">Website</a></p>
     </footer>
   </div>
 
   <canvas id="diagnosisCanvas" width="1080" height="1350"></canvas>
 
   <script>
-    let currentScene = 'LINEã»ãã£ãã';
+    let currentScene = 'LINE・チャット';
     let currentPlan = 'free';
     let usageLeft = 3;
 
@@ -924,13 +924,13 @@
       } else if (count >= needed) {
         btn.disabled = false;
         btn.classList.remove('diagnose-btn-locked');
-        btn.textContent = 'ð® ç©ºæ°èª­ã¿ã¿ã¤ããè¨ºæ­ãã';
+        btn.textContent = '🔮 空気読みタイプを診断する';
         document.getElementById('diagnosisProgress').innerHTML =
-          `åæåæ°: <strong>${count}</strong>å â è¨ºæ­å¯è½ã§ãï¼`;
+          `分析回数: <strong>${count}</strong>回 ✅ 診断可能です！`;
       } else {
         btn.disabled = true;
         btn.classList.add('diagnose-btn-locked');
-        btn.textContent = `ð ãã¨${needed - count}ååæããã¨è¨ºæ­ã§ãã¾ã`;
+        btn.textContent = `🔒 あと${needed - count}回分析すると診断できます`;
       }
     }
 
@@ -955,18 +955,18 @@
       const text = document.getElementById('inputText').value.trim();
 
       if (!text) {
-        alert('ã¡ãã»ã¼ã¸ãå¥åãã¦ãã ãã');
+        alert('メッセージを入力してください');
         return;
       }
 
       if (text.length > 2000) {
-        alert('2000æå­ä»¥åã§å¥åãã¦ãã ãã');
+        alert('2000文字以内で入力してください');
         return;
       }
 
       const btn = document.getElementById('analyzeBtn');
       btn.disabled = true;
-      btn.textContent = 'ð åæä¸­...';
+      btn.textContent = '🔍 分析中...';
 
       try {
         const response = await fetch('/api/analyze', {
@@ -988,7 +988,7 @@
         if (result.error) {
           alert(result.error);
           btn.disabled = false;
-          btn.textContent = 'ð ç©ºæ°ãèª­ã';
+          btn.textContent = '🔍 空気を読む';
           return;
         }
 
@@ -996,9 +996,9 @@
         displayResult(result, originalText);
       } catch (error) {
         console.error('Error:', error);
-        alert('åæã«å¤±æãã¾ãããããä¸åº¦ãè©¦ããã ããã');
+        alert('分析に失敗しました。もう一度お試しください。');
         btn.disabled = false;
-        btn.textContent = 'ð ç©ºæ°ãèª­ã';
+        btn.textContent = '🔍 空気を読む';
       }
     }
 
@@ -1027,8 +1027,8 @@
 
       // Keigo level
       const keigo = result.keigo || 3;
-      const keigoDescs = ['', 'ã¿ã¡å£', 'ã«ã¸ã¥ã¢ã«', 'æ¨æºæ¬èª', 'ä¸å¯§', 'æä¸ç´æ¬èª'];
-      document.getElementById('keigoDesc').textContent = `ã¬ãã« ${keigo}: ${keigoDescs[keigo] || ''}`;
+      const keigoDescs = ['', 'タメ口', 'カジュアル', '標準敬語', '丁寧', '最上級敬語'];
+      document.getElementById('keigoDesc').textContent = `レベル ${keigo}: ${keigoDescs[keigo] || ''}`;
 
       for (let i = 1; i <= 5; i++) {
         const el = document.getElementById(`keigoLevel${i}`);
@@ -1046,16 +1046,16 @@
           <div class="reply-tone">${reply.tone}</div>
           <div class="reply-text">${reply.text}</div>
           <button class="copy-btn" onclick="copyReply(this.parentElement, '${reply.text.replace(/'/g, "\\'")}')">
-            ð ã³ãã¼ãã
+            📋 コピーする
           </button>
-          <div class="copied-msg">ã³ãã¼ãã¾ãã!</div>
+          <div class="copied-msg">コピーしました!</div>
         </div>
       `).join('');
       document.getElementById('repliesResult').innerHTML = repliesHtml;
 
       document.getElementById('results').classList.add('show');
       document.getElementById('analyzeBtn').disabled = false;
-      document.getElementById('analyzeBtn').textContent = 'ð ç©ºæ°ãèª­ã';
+      document.getElementById('analyzeBtn').textContent = '🔍 空気を読む';
 
       setTimeout(() => {
         document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1084,7 +1084,7 @@
 
       const btn = document.getElementById('diagnoseBtn');
       btn.disabled = true;
-      btn.textContent = 'ð® è¨ºæ­ä¸­...';
+      btn.textContent = '🔮 診断中...';
 
       try {
         const response = await fetch('/api/diagnose', {
@@ -1106,15 +1106,15 @@
       } catch (error) {
         console.error('Diagnosis error:', error);
         btn.disabled = false;
-        btn.textContent = 'ð® ç©ºæ°èª­ã¿ã¿ã¤ããè¨ºæ­ãã';
-        alert('è¨ºæ­ã«å¤±æãã¾ãããããä¸åº¦ãè©¦ããã ããã');
+        btn.textContent = '🔮 空気読みタイプを診断する';
+        alert('診断に失敗しました。もう一度お試しください。');
       }
     }
 
     function showDiagnosisResult(result) {
-      document.getElementById('diagTypeEmoji').textContent = result.emoji || 'ð®';
+      document.getElementById('diagTypeEmoji').textContent = result.emoji || '🔮';
       document.getElementById('diagTypeName').textContent = result.type || '--';
-      document.getElementById('diagTitle').textContent = 'ã ' + (result.title || '') + ' ã';
+      document.getElementById('diagTitle').textContent = '〜 ' + (result.title || '') + ' 〜';
       document.getElementById('diagDescription').textContent = result.description || '';
 
       // Stats bars
@@ -1139,15 +1139,15 @@
       document.getElementById('diagWeaknesses').innerHTML = weaknessesHtml;
 
       // Compatibility & Advice
-      document.getElementById('diagCompat').innerHTML = 'ð ç¸æ§â: <strong>' + (result.compatibility || '--') + '</strong>';
-      document.getElementById('diagAdvice').innerHTML = 'ð¡ ' + (result.advice || '');
+      document.getElementById('diagCompat').innerHTML = '💑 相性◎: <strong>' + (result.compatibility || '--') + '</strong>';
+      document.getElementById('diagAdvice').innerHTML = '💡 ' + (result.advice || '');
 
       // Generate card image
       generateDiagnosisImage(result);
 
       // Share URLs
       const shareText = encodeURIComponent(
-        `KuukiAIã§ç©ºæ°èª­ã¿ã¿ã¤ãè¨ºæ­ããã\n${result.emoji} ${result.type}ã§ããï¼\n\nã${result.title}ã\n\nããªããè¨ºæ­ãã¦ã¿ã¦ð\nhttps://kuukiai.vercel.app\n\n#KuukiAI #ç©ºæ°èª­ã¿ã¿ã¤ãè¨ºæ­ #ã³ãã¥ãã±ã¼ã·ã§ã³è¨ºæ­`
+        `KuukiAIで空気読みタイプ診断したら\n${result.emoji} ${result.type}でした！\n\n「${result.title}」\n\nあなたも診断してみて👇\nhttps://kuukiai.vercel.app\n\n#KuukiAI #空気読みタイプ診断 #コミュニケーション診断`
       );
       document.getElementById('diagShareX').href = `https://twitter.com/intent/tweet?text=${shareText}`;
       document.getElementById('diagShareLine').href = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent('https://kuukiai.vercel.app')}&text=${shareText}`;
@@ -1182,11 +1182,11 @@
       ctx.fillStyle = 'rgba(255,255,255,0.9)';
       ctx.font = 'bold 36px -apple-system, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('KuukiAI ç©ºæ°èª­ã¿ã¿ã¤ãè¨ºæ­', W / 2, 100);
+      ctx.fillText('KuukiAI 空気読みタイプ診断', W / 2, 100);
 
       // Emoji
       ctx.font = '100px -apple-system, sans-serif';
-      ctx.fillText(result.emoji || 'ð®', W / 2, 310);
+      ctx.fillText(result.emoji || '🔮', W / 2, 310);
 
       // Type name
       ctx.fillStyle = '#4c51bf';
@@ -1196,7 +1196,7 @@
       // Title
       ctx.fillStyle = '#764ba2';
       ctx.font = '30px -apple-system, sans-serif';
-      ctx.fillText('ã ' + (result.title || '') + ' ã', W / 2, 460);
+      ctx.fillText('〜 ' + (result.title || '') + ' 〜', W / 2, 460);
 
       // Description (wrapped)
       ctx.fillStyle = '#4a5568';
@@ -1250,10 +1250,10 @@
       ctx.textAlign = 'left';
       ctx.fillStyle = '#38a169';
       ctx.font = 'bold 26px -apple-system, sans-serif';
-      ctx.fillText('ðª å¼·ã¿', cardX + 60, swY);
+      ctx.fillText('💪 強み', cardX + 60, swY);
 
       ctx.fillStyle = '#e53e3e';
-      ctx.fillText('ð ãããã', W / 2 + 20, swY);
+      ctx.fillText('😂 あるある', W / 2 + 20, swY);
 
       ctx.font = '22px -apple-system, sans-serif';
       ctx.fillStyle = '#4a5568';
@@ -1265,10 +1265,10 @@
 
       for (let i = 0; i < maxSW; i++) {
         if (strengths[i]) {
-          ctx.fillText('â ' + strengths[i], cardX + 60, swY);
+          ctx.fillText('✅ ' + strengths[i], cardX + 60, swY);
         }
         if (weaknesses[i]) {
-          ctx.fillText('ð ' + weaknesses[i], W / 2 + 20, swY);
+          ctx.fillText('😅 ' + weaknesses[i], W / 2 + 20, swY);
         }
         swY += 34;
       }
@@ -1277,11 +1277,11 @@
       ctx.fillStyle = 'rgba(255,255,255,0.9)';
       ctx.font = 'bold 28px -apple-system, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('ããªããè¨ºæ­ãã¦ã¿ã¦ â kuukiai.vercel.app', W / 2, H - 80);
+      ctx.fillText('あなたも診断してみて → kuukiai.vercel.app', W / 2, H - 80);
 
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.font = '22px -apple-system, sans-serif';
-      ctx.fillText('#KuukiAI #ç©ºæ°èª­ã¿ã¿ã¤ãè¨ºæ­', W / 2, H - 40);
+      ctx.fillText('#KuukiAI #空気読みタイプ診断', W / 2, H - 40);
 
       // Show preview
       const img = document.getElementById('diagPreviewImg');
@@ -1328,7 +1328,7 @@
     }
 
     function resetDiagnosis() {
-      if (confirm('è¨ºæ­çµæã¨åæå±¥æ­´ããªã»ãããã¾ããï¼')) {
+      if (confirm('診断結果と分析履歴をリセットしますか？')) {
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(DIAGNOSIS_RESULT_KEY);
 
@@ -1338,7 +1338,7 @@
         btn.style.display = '';
         btn.disabled = true;
         btn.classList.add('diagnose-btn-locked');
-        btn.textContent = 'ð ãã¨5ååæããã¨è¨ºæ­ã§ãã¾ã';
+        btn.textContent = '🔒 あと5回分析すると診断できます';
         document.getElementById('diagnosisProgress').style.display = '';
         document.querySelector('.diagnosis-progress-bar').style.display = '';
         updateDiagnosisUI();
