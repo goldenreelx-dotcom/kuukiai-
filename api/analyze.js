@@ -28,9 +28,9 @@ export default async function handler(req, res) {
 
   // プランに応じたモデルの選択
   const modelMap = {
-    free: 'gemini-2.5-flash',    // Flash（軽量・高速）
-    premium: 'gemini-2.5-pro',   // Pro（高精度）
-    pro: 'gemini-2.5-pro'        // Pro（最高精度・深層分析）
+    free: 'gemini-2.0-flash',       // 2.0 Flash（非思考・高速）
+    premium: 'gemini-2.5-flash',    // 2.5 Flash（思考モデル・高精度）
+    pro: 'gemini-2.5-pro'           // 2.5 Pro（最高精度・深層分析）
   };
 
   const model = modelMap[plan] || modelMap.free;
@@ -48,17 +48,20 @@ export default async function handler(req, res) {
   // プランに応じたシステムプロンプト
   const systemPrompt = plan === 'pro' ? buildProPrompt(sceneDesc) : buildStandardPrompt(sceneDesc);
 
+  // プランに応じたタイムアウト（ミリ秒）
+  const timeoutMs = plan === 'pro' ? 55000 : plan === 'premium' ? 40000 : 25000;
+
   try {
     // まずメインモデルで試行
-    let result = await callGemini(apiKey, model, systemPrompt, text);
+    let result = await callGemini(apiKey, model, systemPrompt, text, timeoutMs);
     let usedModel = model;
 
-    // Pro/Premiumモデルが高負荷の場合、Flashにフォールバック
-    if (result.error && model !== 'gemini-2.5-flash') {
-      console.warn(`${model} failed (${result.detail}), falling back to gemini-2.5-flash`);
+    // Pro/Premiumモデルが高負荷の場合、2.0 Flashにフォールバック
+    if (result.error && model !== 'gemini-2.0-flash') {
+      console.warn(`${model} failed (${result.detail}), falling back to gemini-2.0-flash`);
       const fallbackPrompt = plan === 'pro' ? buildProPrompt(sceneDesc) : buildStandardPrompt(sceneDesc);
-      result = await callGemini(apiKey, 'gemini-2.5-flash', fallbackPrompt, text);
-      usedModel = 'gemini-2.5-flash';
+      result = await callGemini(apiKey, 'gemini-2.0-flash', fallbackPrompt, text, 25000);
+      usedModel = 'gemini-2.0-flash';
 
       if (result.error) {
         return res.status(503).json(result);
@@ -75,7 +78,6 @@ export default async function handler(req, res) {
     result._plan = plan;
 
     return res.status(200).json(result);
-
   } catch (error) {
     console.error('Analysis error:', error);
     return res.status(500).json({
@@ -86,79 +88,99 @@ export default async function handler(req, res) {
 }
 
 // Gemini API呼び出しヘルパー（エラー時は { error, detail } を返す）
-async function callGemini(apiKey, model, systemPrompt, text) {
+async function callGemini(apiKey, model, systemPrompt, text, timeoutMs) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      system_instruction: { parts: [{ text: systemPrompt }] },
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: `以下のメッセージの「空気」を読んでください:\n\n「${text}」` }]
-        }
-      ],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 8192,
-        responseMimeType: 'application/json'
-      }
-    })
-  });
+  // タイムアウト用のAbortController
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs || 30000);
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    console.error(`Gemini API error (${model}):`, response.status, errorData);
-    return {
-      error: 'AI分析に失敗しました',
-      detail: errorData.error?.message || `HTTP ${response.status}`
-    };
-  }
-
-  const data = await response.json();
-
-  // thinking model の場合、parts に thought パートと text パートが混在する
-  const parts = data.candidates?.[0]?.content?.parts;
-  if (!parts || parts.length === 0) {
-    console.error('No parts in response:', JSON.stringify(data).substring(0, 500));
-    return { error: 'AIからの応答が空です', detail: 'No parts' };
-  }
-
-  // text パートを探す（thought でないパート）
-  let content = '';
-  for (const part of parts) {
-    if (part.text && !part.thought) {
-      content = part.text;
-      break;
-    }
-  }
-  // thought しかない場合は最後の text を使う
-  if (!content) {
-    for (const part of parts) {
-      if (part.text) {
-        content = part.text;
-      }
-    }
-  }
-
-  if (!content) {
-    console.error('No text content in parts:', JSON.stringify(parts).substring(0, 500));
-    return { error: 'AIの応答にテキストが含まれていません', detail: 'No text' };
-  }
-
-  // JSONを抽出
   try {
-    return JSON.parse(content);
-  } catch {
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
-    } else {
-      console.error('Failed to parse JSON:', content.substring(0, 300));
-      return { error: 'AIの応答をパースできませんでした', detail: 'JSON parse failed' };
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: `以下のメッセージの「空気」を読んでください:\n\n「${text}」` }]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 8192,
+          responseMimeType: 'application/json'
+        }
+      })
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error(`Gemini API error (${model}):`, response.status, errorData);
+      return {
+        error: 'AI分析に失敗しました',
+        detail: errorData.error?.message || `HTTP ${response.status}`
+      };
     }
+
+    const data = await response.json();
+
+    // thinking model の場合、parts に thought パートと text パートが混在する
+    const parts = data.candidates?.[0]?.content?.parts;
+    if (!parts || parts.length === 0) {
+      console.error('No parts in response:', JSON.stringify(data).substring(0, 500));
+      return { error: 'AIからの応答が空です', detail: 'No parts' };
+    }
+
+    // text パートを探す（thought でないパート）
+    let content = '';
+    for (const part of parts) {
+      if (part.text && !part.thought) {
+        content = part.text;
+        break;
+      }
+    }
+
+    // thought しかない場合は最後の text を使う
+    if (!content) {
+      for (const part of parts) {
+        if (part.text) {
+          content = part.text;
+        }
+      }
+    }
+
+    if (!content) {
+      console.error('No text content in parts:', JSON.stringify(parts).substring(0, 500));
+      return { error: 'AIの応答にテキストが含まれていません', detail: 'No text' };
+    }
+
+    // JSONを抽出
+    try {
+      return JSON.parse(content);
+    } catch {
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      } else {
+        console.error('Failed to parse JSON:', content.substring(0, 300));
+        return { error: 'AIの応答をパースできませんでした', detail: 'JSON parse failed' };
+      }
+    }
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      console.error(`Gemini API timeout (${model}, ${timeoutMs}ms)`);
+      return {
+        error: 'AI分析がタイムアウトしました。再度お試しください。',
+        detail: 'timeout'
+      };
+    }
+    throw err;
   }
 }
 
@@ -259,7 +281,7 @@ function buildProPrompt(sceneDesc) {
   "dynamics": "人間関係の力学の分析",
   "riskSignal": {
     "level": "safe または caution または warning",
-    "message": "リスクの説明"
+    "message": "リスキの説明"
   },
   "culturalNote": "文化的コンテキストの解説",
   "senderProfile": {
