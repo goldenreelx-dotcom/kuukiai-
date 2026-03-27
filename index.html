@@ -1,817 +1,1352 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KuukiAI - AIが会話の「空気」を読み解きます</title>
-<meta name="description" content="LINEやメールの本音を3秒で可視化。AIが会話の空気を読み解く無料ツール。">
-<meta property="og:title" content="KuukiAI - AIが会話の空気を読み解きます">
-<meta property="og:description" content="LINEやメールの本音を3秒で可視化。無料で彿えます。">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://kuukiai.vercel.app/ogp.png">
-<meta property="og:url" content="https://kuukiai.vercel.app">
-<meta name="twitter:image" content="https://kuukiai.vercel.app/ogp.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="KuukiAI - AIが会話の空気を読み解きます">
-<meta name="twitter:description" content="LINEやメールの本音を3秒で可視化。無料で使えます。">
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif; background: #f7fafc; color: #2d3748; min-height: 100vh; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KuukiAI - ç©ºæ°èª­ã¿AI</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-/* Gradient background with animated particles */
-.gradient-bg {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding-bottom: 30px;
-  position: relative;
-  overflow: hidden;
-}
-.gradient-bg::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.08) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 40%),
-              radial-gradient(circle at 50% 80%, rgba(255,255,255,0.04) 0%, transparent 60%);
-  pointer-events: none;
-}
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #2d3748;
+    }
 
-/* Floating particles */
-.particles {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-.particle {
-  position: absolute;
-  width: 6px; height: 6px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 50%;
-  animation: float 6s ease-in-out infinite;
-}
-.particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; animation-duration: 7s; }
-.particle:nth-child(2) { left: 30%; top: 60%; animation-delay: 1s; animation-duration: 5s; width: 4px; height: 4px; }
-.particle:nth-child(3) { left: 60%; top: 30%; animation-delay: 2s; animation-duration: 8s; width: 8px; height: 8px; }
-.particle:nth-child(4) { left: 80%; top: 70%; animation-delay: 0.5s; animation-duration: 6s; }
-.particle:nth-child(5) { left: 50%; top: 10%; animation-delay: 3s; animation-duration: 9s; width: 5px; height: 5px; }
-.particle:nth-child(6) { left: 90%; top: 40%; animation-delay: 1.5s; animation-duration: 7s; width: 3px; height: 3px; }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
-  25% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
-  50% { transform: translateY(-10px) translateX(-5px); opacity: 0.4; }
-  75% { transform: translateY(-25px) translateX(8px); opacity: 0.5; }
-}
+    /* Header */
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+      padding-top: 20px;
+    }
 
-header {
-  padding: 20px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  z-index: 1;
-  animation: fadeInDown 0.6s ease-out;
-}
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    .header h1 {
+      font-size: 36px;
+      margin-bottom: 8px;
+      font-weight: 800;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
 
-.logo { display: flex; align-items: center; gap: 10px; color: white; font-size: 24px; font-weight: 800; letter-spacing: 1px; }
-.logo-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-.plan-badge { background: rgba(255,255,255,0.2); color: white; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; backdrop-filter: blur(4px); }
+    .header p {
+      font-size: 16px;
+      opacity: 0.95;
+    }
 
-.hero {
-  text-align: center;
-  padding: 40px 24px 30px;
-  color: white;
-  position: relative;
-  z-index: 1;
-  animation: fadeInUp 0.8s ease-out;
-}
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    /* Main Card */
+    .main-card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      margin-bottom: 30px;
+    }
 
-.hero h1 { font-size: 28px; margin-bottom: 12px; line-height: 1.4; }
-.hero p { opacity: 0.9; font-size: 15px; line-height: 1.6; }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-.plan-tabs { display: flex; justify-content: center; gap: 8px; margin-top: 20px; flex-wrap: wrap; position: relative; z-index: 1; }
-.plan-tab {
-  padding: 10px 24px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 25px;
-  background: transparent;
-  color: white;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 44px;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-}
-.plan-tab.active { background: rgba(255,255,255,0.25); border-color: white; }
-.plan-tab:hover { background: rgba(255,255,255,0.15); transform: translateY(-1px); }
+    /* Input Section */
+    .input-section {
+      margin-bottom: 24px;
+    }
 
-.main-card { max-width: 600px; margin: 24px auto 0; padding: 0 16px 40px; position: relative; z-index: 2; }
-.card {
-  background: white;
-  border-radius: 20px;
-  padding: 28px 24px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-  animation: slideUp 0.6s ease-out 0.3s both;
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    .textarea-wrapper {
+      position: relative;
+    }
 
-label { font-weight: 700; font-size: 15px; display: block; margin-bottom: 8px; color: #2d3748; }
-select {
-  width: 100%;
-  padding: 14px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  font-size: 15px;
-  color: #4a5568;
-  background: white;
-  margin-bottom: 20px;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a5568' stroke-width='2' fill='none'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-  cursor: pointer;
-  min-height: 44px;
-  transition: border-color 0.2s;
-}
-select:focus { outline: none; border-color: #667eea; }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      font-size: 16px;
+      font-family: inherit;
+      resize: vertical;
+      transition: border-color 0.2s;
+      color: #2d3748;
+    }
 
-/* Sample text buttons */
-.sample-label { font-size: 13px; color: #718096; margin-bottom: 8px; display: block; }
-.sample-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-.sample-btn {
-  padding: 6px 14px;
-  background: linear-gradient(135deg, #f0f0ff, #f5f0ff);
-  border: 1px solid #d6d0f0;
-  border-radius: 20px;
-  font-size: 13px;
-  color: #5a4e8c;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-.sample-btn:hover {
-  background: linear-gradient(135deg, #e0e0ff, #ece0ff);
-  border-color: #b0a0e0;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
-}
-.sample-btn:active { transform: scale(0.97); }
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
 
-textarea {
-  width: 100%;
-  min-height: 120px;
-  padding: 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  font-size: 15px;
-  font-family: inherit;
-  resize: vertical;
-  transition: border-color 0.2s;
-  line-height: 1.6;
-}
-textarea:focus { outline: none; border-color: #667eea; }
-textarea::placeholder { color: #a0aec0; }
-.char-count { text-align: right; font-size: 12px; color: #a0aec0; margin-top: 4px; margin-bottom: 16px; }
+    .char-count {
+      font-size: 12px;
+      color: #a0aec0;
+      margin-top: 8px;
+      text-align: right;
+    }
 
-.analyze-btn {
-  width: 100%;
-  padding: 16px;
-  border: none;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  font-size: 17px;
-  font-weight: 700;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  position: relative;
-  overflow: hidden;
-  min-height: 52px;
-  animation: pulseGlow 3s ease-in-out infinite;
-}
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); }
-  50% { box-shadow: 0 4px 25px rgba(102, 126, 234, 0.6); }
-}
-.analyze-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(102, 126, 234, 0.5); }
-.analyze-btn:active:not(:disabled) { transform: translateY(0); }
-.analyze-btn:disabled { opacity: 0.7; cursor: not-allowed; animation: none; }
+    /* Scene Selector */
+    .scene-section {
+      margin-bottom: 24px;
+    }
 
-.usage-info { text-align: center; font-size: 13px; color: #718096; margin-top: 12px; }
+    .scene-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
 
-/* Results section */
-.result-section {
-  display: none;
-  margin-top: 24px;
-  animation: resultSlideIn 0.6s ease-out;
-}
-.result-section.show { display: block; }
-@keyframes resultSlideIn {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    .scene-btn {
+      padding: 10px 16px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      color: #718096;
+    }
 
-.result-header {
-  text-align: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #f0f0ff;
-}
-.result-header h2 {
-  font-size: 20px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.keigo-badge {
-  display: inline-block;
-  padding: 4px 14px;
-  background: linear-gradient(135deg, #f0f0ff, #f5f0ff);
-  border: 1px solid #d6d0f0;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #5a4e8c;
-  margin-top: 8px;
-}
+    .scene-btn:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
 
-.result-block { margin-bottom: 20px; }
-.result-block-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #667eea;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.result-block-content {
-  background: #f8f9ff;
-  border-radius: 12px;
-  padding: 16px;
-  font-size: 15px;
-  line-height: 1.7;
-  color: #4a5568;
-  border-left: 3px solid #667eea;
-}
-.honne-content {
-  background: linear-gradient(135deg, #fff5f5, #fff0f5);
-  border-left: 3px solid #e53e3e;
-}
+    .scene-btn.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-color: transparent;
+    }
 
-/* Emotion bars */
-.emotion-section { margin-bottom: 20px; }
-.emotion-bar { display: flex; align-items: center; margin-bottom: 10px; gap: 8px; }
-.emotion-name { width: 40px; font-size: 13px; font-weight: 600; text-align: right; flex-shrink: 0; }
-.emotion-track { flex: 1; height: 10px; background: #edf2f7; border-radius: 10px; overflow: hidden; }
-.emotion-fill {
-  height: 100%;
-  border-radius: 10px;
-  transition: width 1s ease-out;
-  animation: barGrow 1s ease-out;
-}
-@keyframes barGrow {
-  from { width: 0 !important; }
-}
-.emotion-value { width: 40px; font-size: 13px; color: #718096; font-weight: 600; }
+    /* Plan Selector */
+    .plan-section {
+      margin-bottom: 24px;
+    }
 
-/* Reply cards */
-.replies-section { margin-bottom: 16px; }
-.reply-card {
-  background: white;
-  border: 2px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 14px 16px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-  min-height: 44px;
-}
-.reply-card:hover { border-color: #667eea; transform: translateX(4px); box-shadow: 0 2px 12px rgba(102, 126, 234, 0.1); }
-.reply-card:active { transform: scale(0.98); }
-.reply-tone {
-  font-size: 11px;
-  font-weight: 700;
-  color: #667eea;
-  background: #f0f0ff;
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 10px;
-  margin-bottom: 6px;
-}
-.reply-text { font-size: 14px; line-height: 1.5; color: #4a5568; }
-.copied-msg { color: #38a169; font-size: 12px; font-weight: 600; display: none; margin-top: 4px; }
+    .plan-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-/* Screenshot hint */
-.screenshot-hint {
-  text-align: center;
-  margin: 16px 0;
-  padding: 12px;
-  background: linear-gradient(135deg, #fffbeb, #fef3c7);
-  border-radius: 12px;
-  font-size: 13px;
-  color: #92400e;
-  font-weight: 600;
-}
+    .plan-btn {
+      flex: 1;
+      min-width: 100px;
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      color: #718096;
+    }
 
-/* Share section */
-.share-section { text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
-.share-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 12px 24px;
-  background: #1da1f2;
-  color: white;
-  border: none;
-  border-radius: 25px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.2s;
-  min-height: 44px;
-}
-.share-btn:hover { background: #1a91da; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(29, 161, 242, 0.3); }
+    .plan-btn:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
 
-/* Pro-exclusive deep analysis */
-.pro-section { display: none; }
-.pro-section.show { display: block; }
-.pro-label {
-  display: inline-block;
-  padding: 2px 8px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  margin-left: 6px;
-  vertical-align: middle;
-}
-.pro-block-content {
-  background: linear-gradient(135deg, #f5f0ff, #f0f0ff);
-  border-radius: 12px;
-  padding: 16px;
-  font-size: 15px;
-  line-height: 1.7;
-  color: #4a5568;
-  border-left: 3px solid #764ba2;
-}
-.risk-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-}
-.risk-safe { background: #f0fff4; color: #276749; border: 1px solid #9ae6b4; }
-.risk-caution { background: #fffff0; color: #975a16; border: 1px solid #fbd38d; }
-.risk-warning { background: #fff5f5; color: #9b2c2c; border: 1px solid #feb2b2; }
-.risk-message { font-size: 13px; color: #718096; margin-top: 6px; }
-.sender-profile-card {
-  background: linear-gradient(135deg, #f0f4ff, #e8eeff);
-  border-radius: 14px;
-  padding: 18px;
-  border: 1px solid #c3dafe;
-  position: relative;
-}
-.sender-type {
-  font-size: 18px;
-  font-weight: 700;
-  color: #4c51bf;
-  margin-bottom: 8px;
-}
-.sender-traits {
-  font-size: 14px;
-  color: #4a5568;
-  line-height: 1.6;
-  margin-bottom: 12px;
-}
-.sender-tip {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  background: white;
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 14px;
-  color: #2d3748;
-  line-height: 1.5;
-  border-left: 3px solid #667eea;
-}
-.sender-tip-icon {
-  font-size: 18px;
-  flex-shrink: 0;
-}
+    .plan-btn.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-color: transparent;
+    }
 
-/* Error message */
-.error-msg { background: #fff5f5; border: 1px solid #feb2b2; border-radius: 8px; padding: 12px; margin-top: 12px; color: #c53030; font-size: 14px; display: none; }
-.error-msg.show { display: block; }
+    /* Analyze Button */
+    .analyze-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-size: 17px;
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      min-height: 52px;
+    }
 
-/* Loading */
-.loading { display: none; text-align: center; padding: 40px 20px; }
-.loading.show { display: block; }
-.loading-text { font-size: 15px; color: #667eea; font-weight: 600; margin-top: 16px; }
-.spinner {
-  width: 44px;
-  height: 44px;
-  border: 4px solid #e0e0ff;
-  border-top: 4px solid #667eea;
-  border-right: 4px solid #764ba2;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+    .analyze-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(102, 126, 234, 0.4);
+    }
 
-footer {
-  text-align: center;
-  padding: 20px;
-  color: #a0aec0;
-  font-size: 13px;
-}
+    .analyze-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
-/* Mobile adjustments */
-@media (max-width: 480px) {
-  .hero h1 { font-size: 24px; }
-  .card { padding: 24px 18px; }
-  .plan-tab { padding: 8px 16px; font-size: 13px; }
-  .sample-buttons { gap: 5px; }
-  .sample-btn { font-size: 12px; padding: 5px 10px; }
-}
-</style>
+    /* Results Section */
+    .results {
+      display: none;
+      animation: slideIn 0.6s ease-out;
+    }
+
+    .results.show {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-card {
+      background: linear-gradient(135deg, #f8f9ff, #f0f4ff);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      border-left: 6px solid #667eea;
+    }
+
+    .result-card.honne {
+      border-left-color: #764ba2;
+      background: linear-gradient(135deg, #f8f7ff, #f4f0ff);
+    }
+
+    .result-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #667eea;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .result-text {
+      font-size: 16px;
+      color: #2d3748;
+      line-height: 1.6;
+    }
+
+    /* Emotions Chart */
+    .emotions-chart {
+      margin-top: 24px;
+    }
+
+    .emotion-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .emotion-name {
+      width: 60px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #4a5568;
+      flex-shrink: 0;
+    }
+
+    .emotion-track {
+      flex: 1;
+      height: 12px;
+      background: #edf2f7;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .emotion-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 12px;
+      transition: width 0.6s ease-out;
+    }
+
+    .emotion-value {
+      width: 40px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #718096;
+      text-align: right;
+    }
+
+    /* Keigo Level */
+    .keigo-level {
+      margin-top: 20px;
+      padding: 16px;
+      background: white;
+      border-radius: 12px;
+    }
+
+    .keigo-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #718096;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .keigo-bar {
+      display: flex;
+      height: 24px;
+      gap: 4px;
+      background: #edf2f7;
+      border-radius: 12px;
+      padding: 2px;
+    }
+
+    .keigo-level-item {
+      flex: 1;
+      background: #cbd5e0;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .keigo-level-item.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .keigo-desc {
+      font-size: 13px;
+      color: #4a5568;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    /* Replies */
+    .replies-section {
+      margin-top: 24px;
+    }
+
+    .replies-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .reply-card {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .reply-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    .reply-tone {
+      font-size: 12px;
+      font-weight: 700;
+      color: #667eea;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .reply-text {
+      font-size: 15px;
+      color: #2d3748;
+      line-height: 1.5;
+      word-wrap: break-word;
+      margin-bottom: 12px;
+    }
+
+    .copy-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .copy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .copied-msg {
+      display: none;
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2d3748;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    /* Diagnosis section */
+    .diagnosis-section {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 16px 40px;
+    }
+
+    .diagnosis-card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .diagnosis-header {
+      margin-bottom: 20px;
+    }
+
+    .diagnosis-header h3 {
+      font-size: 20px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .diagnosis-progress {
+      font-size: 14px;
+      color: #718096;
+      margin-bottom: 16px;
+    }
+
+    .diagnosis-progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #edf2f7;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .diagnosis-progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 8px;
+      transition: width 0.5s ease;
+    }
+
+    .diagnose-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      color: white;
+      font-size: 17px;
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      min-height: 52px;
+    }
+
+    .diagnose-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(245, 87, 108, 0.4);
+    }
+
+    .diagnose-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #cbd5e0;
+    }
+
+    .diagnose-btn-locked {
+      background: #cbd5e0;
+      color: #718096;
+    }
+
+    /* Diagnosis result */
+    .diagnosis-result {
+      display: none;
+      text-align: center;
+      animation: resultSlideIn 0.6s ease-out;
+    }
+
+    .diagnosis-result.show {
+      display: block;
+    }
+
+    @keyframes resultSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .diagnosis-type-emoji {
+      font-size: 64px;
+      margin-bottom: 8px;
+    }
+
+    .diagnosis-type-name {
+      font-size: 26px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+
+    .diagnosis-title {
+      font-size: 16px;
+      color: #764ba2;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .diagnosis-description {
+      font-size: 15px;
+      color: #4a5568;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      text-align: left;
+      background: #f8f9ff;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    /* Stats radar-like bars */
+    .diagnosis-stats {
+      margin-bottom: 20px;
+    }
+
+    .stat-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .stat-name {
+      width: 56px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: right;
+      flex-shrink: 0;
+      color: #4a5568;
+    }
+
+    .stat-track {
+      flex: 1;
+      height: 10px;
+      background: #edf2f7;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .stat-fill {
+      height: 100%;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      transition: width 1s ease-out;
+    }
+
+    .stat-value {
+      width: 36px;
+      font-size: 13px;
+      color: #718096;
+      font-weight: 600;
+    }
+
+    /* Strengths/Weaknesses */
+    .diagnosis-sw {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .diagnosis-sw-col {
+      flex: 1;
+      text-align: left;
+    }
+
+    .diagnosis-sw-col h4 {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .sw-good h4 { color: #38a169; }
+    .sw-bad h4 { color: #e53e3e; }
+
+    .diagnosis-sw-col ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .diagnosis-sw-col li {
+      font-size: 13px;
+      color: #4a5568;
+      padding: 4px 0;
+      line-height: 1.4;
+    }
+
+    .sw-good li::before { content: 'â '; }
+    .sw-bad li::before { content: 'ð '; }
+
+    .diagnosis-compat {
+      background: linear-gradient(135deg, #f0fff4, #f0f4ff);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 14px;
+      color: #2d3748;
+      margin-bottom: 12px;
+    }
+
+    .diagnosis-advice {
+      background: linear-gradient(135deg, #fffff0, #fef3c7);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 14px;
+      color: #92400e;
+      margin-bottom: 20px;
+    }
+
+    /* Share buttons for diagnosis */
+    .diagnosis-share {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .diagnosis-share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 44px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .share-x { background: #000; }
+    .share-x:hover { background: #333; transform: translateY(-2px); }
+    .share-line { background: #06C755; }
+    .share-line:hover { background: #05b34c; transform: translateY(-2px); }
+    .share-download { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .share-download:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+
+    /* Canvas for image generation (hidden) */
+    #diagnosisCanvas {
+      display: none;
+    }
+
+    .diagnosis-preview-img {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+    }
+
+    .diagnosis-reset-btn {
+      margin-top: 16px;
+      padding: 10px 24px;
+      background: transparent;
+      border: 2px solid #e2e8f0;
+      border-radius: 25px;
+      color: #718096;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .diagnosis-reset-btn:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+      margin-top: 40px;
+      padding-bottom: 20px;
+    }
+
+    footer a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-
-<div class="gradient-bg">
-  <div class="particles">
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-  </div>
-  <header>
-    <div class="logo">
-      <div class="logo-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="white"/><circle cx="15" cy="9" r="1" fill="white"/></svg>
-      </div>
-      KuukiAI
-    </div>
-    <div class="plan-badge" id="planBadge">Free (3/day)</div>
-  </header>
-
-  <div class="hero">
-    <h1>AIが会話の「空気」を<br>読み解きます</h1>
-    <p>LINEやメールのテキストを貼り付けるだけ。<br>隠れた感情と本音を3秒で可視化。</p>
-  </div>
-
-  <div class="plan-tabs">
-    <button class="plan-tab active" onclick="switchPlan('free', this)">Free</button>
-    <button class="plan-tab" onclick="switchPlan('premium', this)">Premium ¥980</button>
-    <button class="plan-tab" onclick="switchPlan('pro', this)">Pro ¥1,980</button>
-  </div>
-</div>
-
-<div class="main-card">
-  <div class="card">
-    <label for="contextSelect">会話の場面</label>
-    <select id="contextSelect">
-      <option value="line">LINE・チャット</option>
-      <option value="email">ビジネスメール</option>
-      <option value="sns">SNS・コメント</option>
-      <option value="other">その他</option>
-    </select>
-
-    <label for="inputText">分析したいテキスト</label>
-    <span class="sample-label">タップして試す：</span>
-    <div class="sample-buttons">
-      <button class="sample-btn" onclick="setSample(this)">別にいいよ、好きにすれば</button>
-      <button class="sample-btn" onclick="setSample(this)">大丈夫です、気にしないでください</button>
-      <button class="sample-btn" onclick="setSample(this)">今度また誘ってね</button>
-      <button class="sample-btn" onclick="setSample(this)">お忙しいところすみません</button>
-      <button class="sample-btn" onclick="setSample(this)">へー、そうなんだ</button>
-    </div>
-    <textarea id="inputText" maxlength="500" placeholder="例：「別にいいよ」「大丈夫です、気にしないでください」&#10;&#10;LINEやメールの文章をここに貼り付けてください..."></textarea>
-    <div class="char-count"><span id="charCount">0</span> / 500文字</div>
-
-    <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">空気を読む</button>
-    <div class="usage-info" id="usageInfo">本日の残り回数: <strong id="usageCount">3</strong> / 3回（Free プラン）</div>
-
-    <div class="error-msg" id="errorMsg"></div>
-
-    <div class="loading" id="loading">
-      <div class="spinner"></div>
-      <div class="loading-text" id="loadingText">テキストを解析中...</div>
+  <div class="container">
+    <div class="header">
+      <h1>ð® KuukiAI</h1>
+      <p>ã¡ãã»ã¼ã¸ã®ãç©ºæ°ããèª­ãAI</p>
     </div>
 
-    <div class="result-section" id="results">
-      <div class="result-header">
-        <h2>分析結果</h2>
-        <div class="keigo-badge" id="keigoBadge">敬語レベル: --</div>
+    <div class="main-card">
+      <!-- Input Section -->
+      <div class="input-section">
+        <div class="section-title">ð ã¡ãã»ã¼ã¸ãå¥å</div>
+        <div class="textarea-wrapper">
+          <textarea id="inputText" placeholder="ç©ºæ°ãèª­ãã§ã»ããã¡ãã»ã¼ã¸ãå¥åãã¦ãã ãã..."></textarea>
+          <div class="char-count"><span id="charCount">0</span>/2000</div>
+        </div>
       </div>
 
-      <div class="result-block">
-        <div class="result-block-title">💬 表面的な意味</div>
-        <div class="result-block-content" id="surfaceText">--</div>
+      <!-- Scene Selection -->
+      <div class="scene-section">
+        <div class="section-title">ð­ å ´é¢ãé¸æ</div>
+        <div class="scene-buttons">
+          <button class="scene-btn active" onclick="setScene(this, 'LINEã»ãã£ãã')">LINEã»ãã£ãã</button>
+          <button class="scene-btn" onclick="setScene(this, 'ãã¸ãã¹ã¡ã¼ã«')">ãã¸ãã¹ã¡ã¼ã«</button>
+          <button class="scene-btn" onclick="setScene(this, 'SNSæç¨¿')">SNSæç¨¿</button>
+          <button class="scene-btn" onclick="setScene(this, 'ãã®ä»')">ãã®ä»</button>
+        </div>
       </div>
 
-      <div class="result-block">
-        <div class="result-block-title">🎭 本音（ホンネ）</div>
-        <div class="result-block-content honne-content" id="honneText">--</div>
+      <!-- Plan Selection -->
+      <div class="plan-section">
+        <div class="section-title">ð åæã¬ãã«ãé¸æ</div>
+        <div class="plan-buttons">
+          <button class="plan-btn active" onclick="setPlan(this, 'free')">
+            <div style="font-weight: 700;">ç¡æ</div>
+            <div style="font-size: 12px; opacity: 0.7;">æ¨æºåæ</div>
+          </button>
+          <button class="plan-btn" onclick="setPlan(this, 'premium')">
+            <div style="font-weight: 700;">ãã¬ãã¢ã </div>
+            <div style="font-size: 12px; opacity: 0.7;">è©³ç´°åæ</div>
+          </button>
+          <button class="plan-btn" onclick="setPlan(this, 'pro')">
+            <div style="font-weight: 700;">ãã­</div>
+            <div style="font-size: 12px; opacity: 0.7;">æ·±å±¤åæ</div>
+          </button>
+        </div>
       </div>
 
-      <div class="result-block emotion-section">
-        <div class="result-block-title">📊 感情スコア</div>
-        <div id="emotionBars"></div>
-      </div>
+      <!-- Analyze Button -->
+      <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">ð ç©ºæ°ãèª­ã</button>
 
-      <div class="result-block replies-section">
-        <div class="result-block-title">💡 おすすめ返信</div>
-        <div id="replyCards"></div>
-      </div>
-
-      <!-- Pro専用: 深層分析セクション -->
-      <div class="pro-section" id="proSection">
-        <div class="result-block">
-          <div class="result-block-title">🧠 心理的背景 <span class="pro-label">PRO</span></div>
-          <div class="pro-block-content" id="psychologyText">--</div>
+      <!-- Results -->
+      <div class="results" id="results">
+        <!-- Surface meaning -->
+        <div class="result-card">
+          <div class="result-label">ð è¡¨é¢çãªæå³</div>
+          <div class="result-text" id="surfaceResult"></div>
         </div>
 
-        <div class="result-block">
-          <div class="result-block-title">⚡ 人間関係の力学 <span class="pro-label">PRO</span></div>
-          <div class="pro-block-content" id="dynamicsText">--</div>
+        <!-- True Intentions -->
+        <div class="result-card honne">
+          <div class="result-label">ð­ æ¬é³ã®æ¨å®</div>
+          <div class="result-text" id="honneResult"></div>
         </div>
 
-        <div class="result-block">
-          <div class="result-block-title">⚠️ 危険度シグナル <span class="pro-label">PRO</span></div>
-          <div id="riskSignalArea">
-            <div class="risk-badge risk-safe" id="riskBadge">--</div>
-            <div class="risk-message" id="riskMessage"></div>
+        <!-- Emotions -->
+        <div class="emotions-chart">
+          <div style="font-weight: 700; color: #2d3748; margin-bottom: 12px;">â¤ï¸ ææã¹ã³ã¢</div>
+          <div id="emotionsResult"></div>
+        </div>
+
+        <!-- Keigo Level -->
+        <div class="keigo-level">
+          <div class="keigo-label">ð æ¬èªã¬ãã«</div>
+          <div class="keigo-bar">
+            <div id="keigoLevel1" class="keigo-level-item"></div>
+            <div id="keigoLevel2" class="keigo-level-item"></div>
+            <div id="keigoLevel3" class="keigo-level-item"></div>
+            <div id="keigoLevel4" class="keigo-level-item"></div>
+            <div id="keigoLevel5" class="keigo-level-item"></div>
+          </div>
+          <div class="keigo-desc" id="keigoDesc"></div>
+        </div>
+
+        <!-- Replies -->
+        <div class="replies-section">
+          <div style="font-weight: 700; color: #2d3748; margin-bottom: 12px;">ð¬ ããããã®è¿ä¿¡</div>
+          <div class="replies-grid" id="repliesResult"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diagnosis Section (Phase 2) -->
+    <div class="diagnosis-section" id="diagnosisSection">
+      <div class="diagnosis-card">
+        <div class="diagnosis-header">
+          <h3>ð® ããªãã®ç©ºæ°èª­ã¿ã¿ã¤ãè¨ºæ­</h3>
+          <div class="diagnosis-progress" id="diagnosisProgress">
+            åæåæ°: <strong id="diagnosisCount">0</strong> / 5åï¼ãã¨<strong id="diagnosisRemaining">5</strong>åã§è¨ºæ­å¯è½ï¼
+          </div>
+          <div class="diagnosis-progress-bar">
+            <div class="diagnosis-progress-fill" id="diagnosisProgressFill" style="width: 0%"></div>
           </div>
         </div>
+        <button class="diagnose-btn diagnose-btn-locked" id="diagnoseBtn" onclick="runDiagnosis()" disabled>
+          ð ãã¨5ååæããã¨è¨ºæ­ã§ãã¾ã
+        </button>
 
-        <div class="result-block">
-          <div class="result-block-title">🏯 文化的コンテキスト <span class="pro-label">PRO</span></div>
-          <div class="pro-block-content" id="culturalNoteText">--</div>
-        </div>
+        <div class="diagnosis-result" id="diagnosisResult">
+          <div class="diagnosis-type-emoji" id="diagTypeEmoji"></div>
+          <div class="diagnosis-type-name" id="diagTypeName"></div>
+          <div class="diagnosis-title" id="diagTitle"></div>
+          <div class="diagnosis-description" id="diagDescription"></div>
 
-        <div class="result-block">
-          <div class="result-block-title">👤 送り主プロファイル <span class="pro-label">PRO</span></div>
-          <div class="sender-profile-card" id="senderProfileCard">
-            <div class="sender-type" id="senderType">--</div>
-            <div class="sender-traits" id="senderTraits">--</div>
-            <div class="sender-tip">
-              <span class="sender-tip-icon">💡</span>
-              <span id="senderTip">--</span>
+          <div class="diagnosis-stats" id="diagStats"></div>
+
+          <div class="diagnosis-sw">
+            <div class="diagnosis-sw-col sw-good">
+              <h4>ðª å¼·ã¿</h4>
+              <ul id="diagStrengths"></ul>
+            </div>
+            <div class="diagnosis-sw-col sw-bad">
+              <h4>ð ãããã</h4>
+              <ul id="diagWeaknesses"></ul>
             </div>
           </div>
+
+          <div class="diagnosis-compat" id="diagCompat"></div>
+          <div class="diagnosis-advice" id="diagAdvice"></div>
+
+          <img id="diagPreviewImg" class="diagnosis-preview-img" style="display:none" />
+
+          <div class="diagnosis-share">
+            <a class="diagnosis-share-btn share-x" id="diagShareX" href="#" target="_blank">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Xã§ã·ã§ã¢
+            </a>
+            <a class="diagnosis-share-btn share-line" id="diagShareLine" href="#" target="_blank">
+              LINEã§éã
+            </a>
+            <button class="diagnosis-share-btn share-download" id="diagDownloadBtn" onclick="downloadDiagnosisImage()">
+              ð¥ ç»åãä¿å­
+            </button>
+          </div>
+
+          <button class="diagnosis-reset-btn" onclick="resetDiagnosis()">è¨ºæ­ããªã»ãããã¦æåãã</button>
         </div>
       </div>
-
-      <div class="screenshot-hint">📸 結果をスクショしてシェアしよう！</div>
-
-      <div class="share-section">
-        <a class="share-btn" id="shareBtn" href="#" target="_blank">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-          結果をシェア
-        </a>
-      </div>
     </div>
+
+    <footer>
+      <p>Â© 2024 KuukiAI. All rights reserved. | <a href="https://kuukiai.vercel.app">Website</a></p>
+    </footer>
   </div>
-</div>
 
-<footer>© 2026 KuukiAI - AIが会話の空気を読み解きます</footer>
+  <canvas id="diagnosisCanvas" width="1080" height="1350"></canvas>
 
-<script>
-let currentPlan = 'free';
-let usageLeft = 3;
+  <script>
+    let currentScene = 'LINEã»ãã£ãã';
+    let currentPlan = 'free';
+    let usageLeft = 3;
 
-const textarea = document.getElementById('inputText');
-const charCount = document.getElementById('charCount');
-textarea.addEventListener('input', () => { charCount.textContent = textarea.value.length; });
+    // Phase 2: Diagnosis data storage
+    const STORAGE_KEY = 'kuukiai_analysis_history';
+    const DIAGNOSIS_RESULT_KEY = 'kuukiai_diagnosis_result';
 
-function setSample(btn) {
-  textarea.value = btn.textContent;
-  charCount.textContent = btn.textContent.length;
-  textarea.focus();
-}
-
-function switchPlan(plan, btn) {
-  currentPlan = plan;
-  document.querySelectorAll('.plan-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  const badge = document.getElementById('planBadge');
-  const usageInfo = document.getElementById('usageInfo');
-  if (plan === 'free') {
-    badge.textContent = 'Free (3/day)';
-    usageLeft = 3;
-    document.getElementById('usageCount').textContent = '3';
-    usageInfo.innerHTML = '本日の残り回数: <strong id="usageCount">3</strong> / 3回（Free プラン）';
-  }
-  if (plan === 'premium') {
-    badge.textContent = 'Premium';
-    usageLeft = 30;
-    usageInfo.innerHTML = '本日の残り回数: <strong id="usageCount">30</strong> / 30回（Premium プラン - Gemini Pro）';
-  }
-  if (plan === 'pro') {
-    badge.textContent = 'Pro';
-    usageLeft = 100;
-    usageInfo.innerHTML = '本日の残り回数: <strong id="usageCount">100</strong> / 100回（Pro プラン - 深層分析）';
-  }
-}
-
-const demoAnalysis = {
-  'default_negative': {
-    surface: '表面上は問題ないと伝えている',
-    honne: '実際には不満や期待外れの感情を抱えている可能性が高い。直接的に言わないことで、相手に察してほしいというサインを送っている。',
-    emotions: { '怒り': 25, '不満': 65, '期待': 40, '好意': 15, '不安': 50 },
-    keigo: 2,
-    replies: [
-      { tone: '共感型', text: 'そう感じてるんだね。もう少し詳しく聞かせてもらえると嬉しいです。' },
-      { tone: '確認型', text: '本当に大丈夫？何か気になることがあれば遠慮なく言ってね。' },
-      { tone: '提案型', text: '一度ゆっくり話す時間を作らない？直接会って話したいな。' }
-    ]
-  },
-  'default_positive': {
-    surface: '好意的で前向きな気持ちを伝えている',
-    honne: '相手に対してポジティブな感情を持っており、関係を良好に保ちたいという意思が見える。',
-    emotions: { '怒り': 5, '不満': 5, '期待': 70, '好意': 85, '不安': 10 },
-    keigo: 2,
-    replies: [
-      { tone: '感謝型', text: 'ありがとう！そう言ってもらえると本当に嬉しいです。' },
-      { tone: '共感型', text: '私も同じ気持ちです！これからもよろしくお願いします。' },
-      { tone: 'カジュアル型', text: 'えー嬉しい！ありがとね！' }
-    ]
-  }
-};
-
-function analyzeTextLocal(text) {
-  const hasPositive = text.includes('ありがとう') || text.includes('嬉しい') || text.includes('最高');
-  if (hasPositive) return demoAnalysis['default_positive'];
-  return demoAnalysis['default_negative'];
-}
-
-async function analyze() {
-  const text = document.getElementById('inputText').value.trim();
-  if (!text) { alert('テキストを入力してください'); return; }
-  if (usageLeft <= 0) {
-    if (currentPlan === 'free') {
-      alert('本日の無料回数を使い切りました。\nPremiumプラン（¥980/月）で30回/日、Proプラン（¥1,980/月）で100回/日使えます。');
-    } else {
-      alert('本日の利用回数を使い切りました。明日リセットされます。');
+    function getAnalysisHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch { return []; }
     }
-    return;
-  }
 
-  const errorMsg = document.getElementById('errorMsg');
-  errorMsg.classList.remove('show');
-  document.getElementById('results').classList.remove('show');
-  document.getElementById('loading').classList.add('show');
-  document.getElementById('analyzeBtn').disabled = true;
+    function saveAnalysisToHistory(text, result, chosenTone) {
+      const history = getAnalysisHistory();
+      history.push({
+        text: text.substring(0, 100),
+        emotions: result.emotions,
+        keigo: result.keigo,
+        chosenTone: chosenTone || null,
+        timestamp: Date.now()
+      });
+      // Keep last 50 entries max
+      if (history.length > 50) history.splice(0, history.length - 50);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+      updateDiagnosisUI();
+    }
 
-  const phases = ['テキストを解析中...', '感情パターンを検出中...', '本音を推定中...'];
-  let phase = 0;
-  const phaseInterval = setInterval(() => {
-    phase++;
-    if (phase < phases.length) document.getElementById('loadingText').textContent = phases[phase];
-  }, 800);
+    function updateDiagnosisUI() {
+      const history = getAnalysisHistory();
+      const count = history.length;
+      const needed = 5;
 
-  const scene = document.getElementById('contextSelect').value;
+      document.getElementById('diagnosisCount').textContent = count;
+      document.getElementById('diagnosisRemaining').textContent = Math.max(0, needed - count);
+      document.getElementById('diagnosisProgressFill').style.width = Math.min(100, (count / needed) * 100) + '%';
 
-  try {
-    const response = await fetch('/api/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, plan: currentPlan, scene })
+      const btn = document.getElementById('diagnoseBtn');
+      const savedResult = localStorage.getItem(DIAGNOSIS_RESULT_KEY);
+
+      if (savedResult) {
+        // Already diagnosed - show result
+        btn.style.display = 'none';
+        document.getElementById('diagnosisProgress').style.display = 'none';
+        document.querySelector('.diagnosis-progress-bar').style.display = 'none';
+        showDiagnosisResult(JSON.parse(savedResult));
+      } else if (count >= needed) {
+        btn.disabled = false;
+        btn.classList.remove('diagnose-btn-locked');
+        btn.textContent = 'ð® ç©ºæ°èª­ã¿ã¿ã¤ããè¨ºæ­ãã';
+        document.getElementById('diagnosisProgress').innerHTML =
+          `åæåæ°: <strong>${count}</strong>å â è¨ºæ­å¯è½ã§ãï¼`;
+      } else {
+        btn.disabled = true;
+        btn.classList.add('diagnose-btn-locked');
+        btn.textContent = `ð ãã¨${needed - count}ååæããã¨è¨ºæ­ã§ãã¾ã`;
+      }
+    }
+
+    function setScene(element, scene) {
+      document.querySelectorAll('.scene-btn').forEach(btn => btn.classList.remove('active'));
+      element.classList.add('active');
+      currentScene = scene;
+    }
+
+    function setPlan(element, plan) {
+      document.querySelectorAll('.plan-btn').forEach(btn => btn.classList.remove('active'));
+      element.classList.add('active');
+      currentPlan = plan;
+    }
+
+    const inputText = document.getElementById('inputText');
+    inputText.addEventListener('input', function() {
+      document.getElementById('charCount').textContent = this.value.length;
     });
 
-    clearInterval(phaseInterval);
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.error || 'API呼び出しに失敗しました');
+    async function analyze() {
+      const text = document.getElementById('inputText').value.trim();
+
+      if (!text) {
+        alert('ã¡ãã»ã¼ã¸ãå¥åãã¦ãã ãã');
+        return;
+      }
+
+      if (text.length > 2000) {
+        alert('2000æå­ä»¥åã§å¥åãã¦ãã ãã');
+        return;
+      }
+
+      const btn = document.getElementById('analyzeBtn');
+      btn.disabled = true;
+      btn.textContent = 'ð åæä¸­...';
+
+      try {
+        const response = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: text,
+            plan: currentPlan,
+            scene: currentScene
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.error) {
+          alert(result.error);
+          btn.disabled = false;
+          btn.textContent = 'ð ç©ºæ°ãèª­ã';
+          return;
+        }
+
+        const originalText = text;
+        displayResult(result, originalText);
+      } catch (error) {
+        console.error('Error:', error);
+        alert('åæã«å¤±æãã¾ãããããä¸åº¦ãè©¦ããã ããã');
+        btn.disabled = false;
+        btn.textContent = 'ð ç©ºæ°ãèª­ã';
+      }
     }
 
-    const result = await response.json();
-    usageLeft--;
-    document.getElementById('usageCount').textContent = usageLeft;
-    document.getElementById('loading').classList.remove('show');
-    document.getElementById('analyzeBtn').disabled = false;
-    displayResult(result, text);
+    function displayResult(result, originalText) {
+      // Phase 2: Save to history
+      saveAnalysisToHistory(originalText, result, null);
 
-  } catch (error) {
-    console.warn('API unavailable, using demo mode:', error.message);
-    clearInterval(phaseInterval);
-    setTimeout(() => {
-      document.getElementById('loading').classList.remove('show');
+      // Surface meaning
+      document.getElementById('surfaceResult').textContent = result.surface || '';
+
+      // True intentions
+      document.getElementById('honneResult').textContent = result.honne || '';
+
+      // Emotions
+      const emotions = result.emotions || {};
+      const emotionsHtml = Object.entries(emotions).map(([name, value]) => `
+        <div class="emotion-bar">
+          <span class="emotion-name">${name}</span>
+          <div class="emotion-track">
+            <div class="emotion-fill" style="width: ${value}%"></div>
+          </div>
+          <span class="emotion-value">${value}</span>
+        </div>
+      `).join('');
+      document.getElementById('emotionsResult').innerHTML = emotionsHtml;
+
+      // Keigo level
+      const keigo = result.keigo || 3;
+      const keigoDescs = ['', 'ã¿ã¡å£', 'ã«ã¸ã¥ã¢ã«', 'æ¨æºæ¬èª', 'ä¸å¯§', 'æä¸ç´æ¬èª'];
+      document.getElementById('keigoDesc').textContent = `ã¬ãã« ${keigo}: ${keigoDescs[keigo] || ''}`;
+
+      for (let i = 1; i <= 5; i++) {
+        const el = document.getElementById(`keigoLevel${i}`);
+        if (i <= keigo) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      }
+
+      // Replies
+      const replies = result.replies || [];
+      const repliesHtml = replies.map((reply, idx) => `
+        <div class="reply-card" data-index="${idx}">
+          <div class="reply-tone">${reply.tone}</div>
+          <div class="reply-text">${reply.text}</div>
+          <button class="copy-btn" onclick="copyReply(this.parentElement, '${reply.text.replace(/'/g, "\\'")}')">
+            ð ã³ãã¼ãã
+          </button>
+          <div class="copied-msg">ã³ãã¼ãã¾ãã!</div>
+        </div>
+      `).join('');
+      document.getElementById('repliesResult').innerHTML = repliesHtml;
+
+      document.getElementById('results').classList.add('show');
       document.getElementById('analyzeBtn').disabled = false;
-      usageLeft--;
-      document.getElementById('usageCount').textContent = usageLeft;
-      const result = analyzeTextLocal(text);
-      displayResult(result, text);
-      errorMsg.textContent = '現在デモモードで動作しています（AI APIに接続できませんでした）';
-      errorMsg.classList.add('show');
-    }, 1500);
-  }
-}
+      document.getElementById('analyzeBtn').textContent = 'ð ç©ºæ°ãèª­ã';
 
-function displayResult(result, originalText) {
-  document.getElementById('surfaceText').textContent = result.surface;
-  document.getElementById('honneText').textContent = result.honne;
+      setTimeout(() => {
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
 
-  const keigoLabels = ['', 'タメ口', 'カジュアル', '標準敬語', '丁寧', '最上級敬語'];
-  document.getElementById('keigoBadge').textContent = '敬語レベル: ' + keigoLabels[result.keigo];
+    function copyReply(card, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const msg = card.querySelector('.copied-msg');
+        msg.style.display = 'block';
+        setTimeout(() => { msg.style.display = 'none'; }, 2000);
 
-  const emotionColors = { '怒り': '#e53e3e', '不満': '#ed8936', '期待': '#38b2ac', '好意': '#38a169', '不安': '#805ad5' };
-  const barsHtml = Object.entries(result.emotions).map(([name, value]) => `
-    <div class="emotion-bar">
-      <span class="emotion-name">${name}</span>
-      <div class="emotion-track">
-        <div class="emotion-fill" style="width: ${value}%; background: ${emotionColors[name] || '#667eea'}"></div>
-      </div>
-      <span class="emotion-value">${value}%</span>
-    </div>
-  `).join('');
-  document.getElementById('emotionBars').innerHTML = barsHtml;
+        // Track chosen tone for diagnosis
+        const tone = card.querySelector('.reply-tone')?.textContent || '';
+        const history = getAnalysisHistory();
+        if (history.length > 0) {
+          history[history.length - 1].chosenTone = tone;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+        }
+      });
+    }
 
-  const repliesHtml = result.replies.map((r, i) => `
-    <div class="reply-card" onclick="copyReply(this, '${r.text.replace(/'/g, "\\'")}')">
-      <div class="reply-tone">${r.tone}</div>
-      <div class="reply-text">${r.text}</div>
-      <div class="copied-msg" id="copied${i}">コピーしました！</div>
-    </div>
-  `).join('');
-  document.getElementById('replyCards').innerHTML = repliesHtml;
+    async function runDiagnosis() {
+      const history = getAnalysisHistory();
+      if (history.length < 5) return;
 
-  const shareText = encodeURIComponent(`KuukiAIで会話を分析してみた！\n本音が丸見えで怖い...\n\nhttps://kuukiai.vercel.app\n\n#KuukiAI #空気読みAI #AI分析`);
-  document.getElementById('shareBtn').href = `https://twitter.com/intent/tweet?text=${shareText}`;
+      const btn = document.getElementById('diagnoseBtn');
+      btn.disabled = true;
+      btn.textContent = 'ð® è¨ºæ­ä¸­...';
 
-  // Pro専用フィールドの表示/非表示
-  const proSection = document.getElementById('proSection');
-  if (currentPlan === 'pro' && result.psychology) {
-    proSection.classList.add('show');
-    document.getElementById('psychologyText').textContent = result.psychology;
-    document.getElementById('dynamicsText').textContent = result.dynamics || '--';
-    document.getElementById('culturalNoteText').textContent = result.culturalNote || '--';
+      try {
+        const response = await fetch('/api/diagnose', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ history: history.slice(-20) })
+        });
 
-    // リスクシグナル
-    const riskBadge = document.getElementById('riskBadge');
-    const risk = result.riskSignal || { level: 'safe', message: '' };
-    riskBadge.className = 'risk-badge risk-' + risk.level;
-    const riskLabels = { safe: '✅ 安全', caution: '⚡ 注意', warning: '🚨 警告' };
-    riskBadge.textContent = riskLabels[risk.level] || '✅ 安全';
-    document.getElementById('riskMessage').textContent = risk.message || '';
+        if (!response.ok) {
+          throw new Error('API error');
+        }
 
-    // 送り主プロファイル
-    const profile = result.senderProfile || {};
-    document.getElementById('senderType').textContent = profile.type || '--';
-    document.getElementById('senderTraits').textContent = profile.traits || '--';
-    document.getElementById('senderTip').textContent = profile.tip || '--';
-  } else {
-    proSection.classList.remove('show');
-  }
+        const result = await response.json();
+        localStorage.setItem(DIAGNOSIS_RESULT_KEY, JSON.stringify(result));
+        btn.style.display = 'none';
+        document.getElementById('diagnosisProgress').style.display = 'none';
+        document.querySelector('.diagnosis-progress-bar').style.display = 'none';
+        showDiagnosisResult(result);
+      } catch (error) {
+        console.error('Diagnosis error:', error);
+        btn.disabled = false;
+        btn.textContent = 'ð® ç©ºæ°èª­ã¿ã¿ã¤ããè¨ºæ­ãã';
+        alert('è¨ºæ­ã«å¤±æãã¾ãããããä¸åº¦ãè©¦ããã ããã');
+      }
+    }
 
-  document.getElementById('results').classList.add('show');
-  setTimeout(() => {
-    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 100);
-}
+    function showDiagnosisResult(result) {
+      document.getElementById('diagTypeEmoji').textContent = result.emoji || 'ð®';
+      document.getElementById('diagTypeName').textContent = result.type || '--';
+      document.getElementById('diagTitle').textContent = 'ã ' + (result.title || '') + ' ã';
+      document.getElementById('diagDescription').textContent = result.description || '';
 
-function copyReply(card, text) {
-  navigator.clipboard.writeText(text).then(() => {
-    const msg = card.querySelector('.copied-msg');
-    msg.style.display = 'block';
-    setTimeout(() => { msg.style.display = 'none'; }, 2000);
-  });
-}
-</script>
+      // Stats bars
+      const stats = result.stats || {};
+      const statsHtml = Object.entries(stats).map(([name, value]) => `
+        <div class="stat-bar">
+          <span class="stat-name">${name}</span>
+          <div class="stat-track">
+            <div class="stat-fill" style="width: ${value}%"></div>
+          </div>
+          <span class="stat-value">${value}</span>
+        </div>
+      `).join('');
+      document.getElementById('diagStats').innerHTML = statsHtml;
+
+      // Strengths
+      const strengthsHtml = (result.strengths || []).map(s => `<li>${s}</li>`).join('');
+      document.getElementById('diagStrengths').innerHTML = strengthsHtml;
+
+      // Weaknesses
+      const weaknessesHtml = (result.weaknesses || []).map(w => `<li>${w}</li>`).join('');
+      document.getElementById('diagWeaknesses').innerHTML = weaknessesHtml;
+
+      // Compatibility & Advice
+      document.getElementById('diagCompat').innerHTML = 'ð ç¸æ§â: <strong>' + (result.compatibility || '--') + '</strong>';
+      document.getElementById('diagAdvice').innerHTML = 'ð¡ ' + (result.advice || '');
+
+      // Generate card image
+      generateDiagnosisImage(result);
+
+      // Share URLs
+      const shareText = encodeURIComponent(
+        `KuukiAIã§ç©ºæ°èª­ã¿ã¿ã¤ãè¨ºæ­ããã\n${result.emoji} ${result.type}ã§ããï¼\n\nã${result.title}ã\n\nããªããè¨ºæ­ãã¦ã¿ã¦ð\nhttps://kuukiai.vercel.app\n\n#KuukiAI #ç©ºæ°èª­ã¿ã¿ã¤ãè¨ºæ­ #ã³ãã¥ãã±ã¼ã·ã§ã³è¨ºæ­`
+      );
+      document.getElementById('diagShareX').href = `https://twitter.com/intent/tweet?text=${shareText}`;
+      document.getElementById('diagShareLine').href = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent('https://kuukiai.vercel.app')}&text=${shareText}`;
+
+      document.getElementById('diagnosisResult').classList.add('show');
+
+      setTimeout(() => {
+        document.getElementById('diagnosisResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+
+    function generateDiagnosisImage(result) {
+      const canvas = document.getElementById('diagnosisCanvas');
+      const ctx = canvas.getContext('2d');
+      const W = 1080;
+      const H = 1350;
+
+      // Background gradient
+      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+      bgGrad.addColorStop(0, '#667eea');
+      bgGrad.addColorStop(1, '#764ba2');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // White card area
+      const cardX = 60, cardY = 140, cardW = W - 120, cardH = H - 280;
+      ctx.fillStyle = 'white';
+      roundRect(ctx, cardX, cardY, cardW, cardH, 30);
+      ctx.fill();
+
+      // Logo text at top
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.font = 'bold 36px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('KuukiAI ç©ºæ°èª­ã¿ã¿ã¤ãè¨ºæ­', W / 2, 100);
+
+      // Emoji
+      ctx.font = '100px -apple-system, sans-serif';
+      ctx.fillText(result.emoji || 'ð®', W / 2, 310);
+
+      // Type name
+      ctx.fillStyle = '#4c51bf';
+      ctx.font = 'bold 52px -apple-system, sans-serif';
+      ctx.fillText(result.type || '', W / 2, 400);
+
+      // Title
+      ctx.fillStyle = '#764ba2';
+      ctx.font = '30px -apple-system, sans-serif';
+      ctx.fillText('ã ' + (result.title || '') + ' ã', W / 2, 460);
+
+      // Description (wrapped)
+      ctx.fillStyle = '#4a5568';
+      ctx.font = '26px -apple-system, sans-serif';
+      const descLines = wrapText(ctx, result.description || '', cardW - 100);
+      let descY = 520;
+      descLines.forEach(line => {
+        ctx.fillText(line, W / 2, descY);
+        descY += 38;
+      });
+
+      // Stats bars
+      const stats = result.stats || {};
+      const statEntries = Object.entries(stats);
+      let statY = descY + 30;
+
+      ctx.textAlign = 'right';
+      ctx.font = 'bold 24px -apple-system, sans-serif';
+
+      statEntries.forEach(([name, value]) => {
+        // Label
+        ctx.fillStyle = '#4a5568';
+        ctx.textAlign = 'right';
+        ctx.fillText(name, cardX + 140, statY + 6);
+
+        // Track bg
+        ctx.fillStyle = '#edf2f7';
+        roundRect(ctx, cardX + 160, statY - 10, 640, 20, 10);
+        ctx.fill();
+
+        // Fill
+        const fillGrad = ctx.createLinearGradient(cardX + 160, 0, cardX + 160 + 640, 0);
+        fillGrad.addColorStop(0, '#667eea');
+        fillGrad.addColorStop(1, '#764ba2');
+        ctx.fillStyle = fillGrad;
+        roundRect(ctx, cardX + 160, statY - 10, 640 * (value / 100), 20, 10);
+        ctx.fill();
+
+        // Value
+        ctx.fillStyle = '#718096';
+        ctx.textAlign = 'left';
+        ctx.font = 'bold 22px -apple-system, sans-serif';
+        ctx.fillText(value.toString(), cardX + 820, statY + 6);
+        ctx.font = 'bold 24px -apple-system, sans-serif';
+
+        statY += 44;
+      });
+
+      // Strengths
+      let swY = statY + 30;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#38a169';
+      ctx.font = 'bold 26px -apple-system, sans-serif';
+      ctx.fillText('ðª å¼·ã¿', cardX + 60, swY);
+
+      ctx.fillStyle = '#e53e3e';
+      ctx.fillText('ð ãããã', W / 2 + 20, swY);
+
+      ctx.font = '22px -apple-system, sans-serif';
+      ctx.fillStyle = '#4a5568';
+      swY += 36;
+
+      const strengths = result.strengths || [];
+      const weaknesses = result.weaknesses || [];
+      const maxSW = Math.max(strengths.length, weaknesses.length);
+
+      for (let i = 0; i < maxSW; i++) {
+        if (strengths[i]) {
+          ctx.fillText('â ' + strengths[i], cardX + 60, swY);
+        }
+        if (weaknesses[i]) {
+          ctx.fillText('ð ' + weaknesses[i], W / 2 + 20, swY);
+        }
+        swY += 34;
+      }
+
+      // Bottom CTA
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.font = 'bold 28px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('ããªããè¨ºæ­ãã¦ã¿ã¦ â kuukiai.vercel.app', W / 2, H - 80);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '22px -apple-system, sans-serif';
+      ctx.fillText('#KuukiAI #ç©ºæ°èª­ã¿ã¿ã¤ãè¨ºæ­', W / 2, H - 40);
+
+      // Show preview
+      const img = document.getElementById('diagPreviewImg');
+      img.src = canvas.toDataURL('image/png');
+      img.style.display = 'block';
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function wrapText(ctx, text, maxWidth) {
+      const lines = [];
+      let line = '';
+      for (const char of text) {
+        const testLine = line + char;
+        if (ctx.measureText(testLine).width > maxWidth) {
+          lines.push(line);
+          line = char;
+        } else {
+          line = testLine;
+        }
+      }
+      if (line) lines.push(line);
+      return lines.slice(0, 4);
+    }
+
+    function downloadDiagnosisImage() {
+      const canvas = document.getElementById('diagnosisCanvas');
+      const link = document.createElement('a');
+      link.download = 'kuukiai-diagnosis.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function resetDiagnosis() {
+      if (confirm('è¨ºæ­çµæã¨åæå±¥æ­´ããªã»ãããã¾ããï¼')) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(DIAGNOSIS_RESULT_KEY);
+
+        // Reset UI
+        document.getElementById('diagnosisResult').classList.remove('show');
+        const btn = document.getElementById('diagnoseBtn');
+        btn.style.display = '';
+        btn.disabled = true;
+        btn.classList.add('diagnose-btn-locked');
+        btn.textContent = 'ð ãã¨5ååæããã¨è¨ºæ­ã§ãã¾ã';
+        document.getElementById('diagnosisProgress').style.display = '';
+        document.querySelector('.diagnosis-progress-bar').style.display = '';
+        updateDiagnosisUI();
+      }
+    }
+
+    // Initialize diagnosis UI on page load
+    updateDiagnosisUI();
+  </script>
 </body>
 </html>
