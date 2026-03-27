@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
   // プランに応じたモデルの選択
   const modelMap = {
-    free: 'gemini-2.0-flash',       // 2.0 Flash（非思考・高速）
+    free: 'gemini-2.5-flash-lite',       // 2.5 Flash Lite（高速・軽量）
     premium: 'gemini-2.5-flash',    // 2.5 Flash（思考モデル・高精度）
     pro: 'gemini-2.5-pro'           // 2.5 Pro（最高精度・深層分析）
   };
@@ -57,11 +57,11 @@ export default async function handler(req, res) {
     let usedModel = model;
 
     // Pro/Premiumモデルが高負荷の場合、2.0 Flashにフォールバック
-    if (result.error && model !== 'gemini-2.0-flash') {
-      console.warn(`${model} failed (${result.detail}), falling back to gemini-2.0-flash`);
+    if (result.error && model !== 'gemini-2.5-flash-lite') {
+      console.warn(`${model} failed (${result.detail}), falling back to gemini-2.5-flash-lite`);
       const fallbackPrompt = plan === 'pro' ? buildProPrompt(sceneDesc) : buildStandardPrompt(sceneDesc);
-      result = await callGemini(apiKey, 'gemini-2.0-flash', fallbackPrompt, text, 25000);
-      usedModel = 'gemini-2.0-flash';
+      result = await callGemini(apiKey, 'gemini-2.5-flash-lite', fallbackPrompt, text, 25000);
+      usedModel = 'gemini-2.5-flash-lite';
 
       if (result.error) {
         return res.status(503).json(result);
