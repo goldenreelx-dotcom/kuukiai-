@@ -231,6 +231,10 @@ function buildProPrompt(sceneDesc) {
    - level: "safe" | "caution" | "warning" の3段階
    - message: リスクの説明（1文）
 9. 文化的コンテキスト（culturalNote）: この表現が日本文化特有の「空気」「建前」「察し」とどう関係するかを1-2文で解説
+10. 送り主プロファイル（senderProfile）: このメッセージの送り主のコミュニケーションタイプを推定
+   - type: タイプ名（例: "回避型コミュニケーター", "受動的攻撃タイプ", "察してほしいタイプ", "ストレート表現者"など、日本語で簡潔に）
+   - traits: そのタイプの特徴を1文で説明
+   - tip: この人に対する効果的なコミュニケーションのコツを1文で
 
 ## 出力形式（必ずこのJSON形式で返してください）
 {
@@ -257,7 +261,12 @@ function buildProPrompt(sceneDesc) {
     "level": "safe または caution または warning",
     "message": "リスクの説明"
   },
-  "culturalNote": "文化的コンテキストの解説"
+  "culturalNote": "文化的コンテキストの解説",
+  "senderProfile": {
+    "type": "タイプ名",
+    "traits": "特徴の説明",
+    "tip": "攻略ポイント"
+  }
 }
 
 JSONのみを返してください。説明やマークダウンは不要です。`;
