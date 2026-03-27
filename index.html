@@ -971,15 +971,22 @@
       btn.textContent = '🔍 分析中...';
 
       try {
-        const response = await fetch('/api/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: text,
-            plan: currentPlan,
-            scene: currentScene
-          })
-        });
+        // タイムアウト設定（60秒）
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          text: text,
+          plan: currentPlan,
+          scene: currentScene
+        })
+      });
+
+      clearTimeout(timeoutId);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -997,6 +1004,10 @@
         const originalText = text;
         displayResult(result, originalText);
       } catch (error) {
+      if (error.name === 'AbortError') {
+        alert('分析がタイムアウトしました。再度お試しください。');
+        return;
+      }
         console.error('Error:', error);
         alert('分析に失敗しました。もう一度お試しください。');
         btn.disabled = false;
